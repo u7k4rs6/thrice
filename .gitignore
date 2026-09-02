@@ -1,0 +1,7 @@
+.env
+.venv/
+artifacts/
+__pycache__/
+*.webm
+*.mp4
+spikes/_scratch/
