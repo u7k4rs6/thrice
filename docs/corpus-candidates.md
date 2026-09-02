@@ -188,3 +188,56 @@ Second, three of the seven come from the same v2.19.0 to v2.20.0 pair. If that p
 - **Q22** How is the timeline column hidden in the UI, for #4045's steps?
 - **Q23** What is the exact focus-highlight class on a span row, for #4131's predicates?
 - **Q24** Does the v2.15.0 / v2.15.1 shared UI commit mean any other release pair also shares a pointer? Checked for these nine and it does not, but worth re-checking if the window ever widens.
+- **Q25** What makes a sandbox "Not snapshottable"? `snapshot()` returned 409 on four consecutive attempts on day 3, including on a trivial freshly created sandbox with zero other sandboxes live and only two snapshots stored, then succeeded normally twenty minutes later. Ruled out: concurrent-sandbox state and a snapshot quota. Same 409 family as day 1's `Not revertable`. Treated as transient, and the environment manager now falls back to building in place.
+- **Q26** How does a plan make jaeger-ui actually run a search? `/search?service=<svc>&lookback=1h&limit=20` applies lookback and limit but leaves the service unselected and "Find Traces" disabled, so no search executes. Likely the services list loads asynchronously and the query param is applied before the option exists. Blocks #4075 and every other entry whose steps start from search results, which is most of them.
+
+---
+
+## Day 3 addendum: #4075 predicate pair corrected, and the entry is not yet proven
+
+The day-2 sketch for #4075 above (section "6.") proposed
+`element_absent` / `element_visible` on the back-to-search control. **That pair
+is wrong and would have scored the entry incorrect.**
+
+Reading the fix diff on day 3 shows the maintainers did not implement the
+behaviour the issue asked for. The issue says "The back-to-search button should
+appear in both cases." The fix instead adds `e.preventDefault()` to
+`ClickToCopy.whenClicked`, so on v2.20.0 clicking the trace ID copies it and
+**does not navigate at all**. The back arrow is therefore absent on both
+releases after that click: on v2.19.0 because router state was lost, on v2.20.0
+because you never left the search page. The sketched `element_absent` predicate
+would hold on both, returning REPRODUCED twice and marking the entry incorrect
+for a reason that has nothing to do with thrice.
+
+The corrected pair keys on the observable that actually separates the releases,
+which is whether the click navigated at all:
+
+- **actual**: `element_visible` on `.TracePageHeader` (the click navigated to a trace page)
+- **expected**: `element_visible` on `.SearchResults` (the click copied and left search in place)
+
+Mechanism, confirmed in the source at both pinned commits: `TracePageHeader`
+renders the back `Link` only when `toSearch` is truthy, and
+`toSearch = location.state.fromSearch`. On v2.19.0 `stopPropagation()` prevents
+react-router's handler from running but the native anchor default still fires,
+so the browser does a full page load and `location.state` is lost.
+
+**Status: not yet proven.** The first end-to-end run returned INCONCLUSIVE with
+reason `locator_miss` on both versions, because navigating to
+`/search?service=<svc>&lookback=1h&limit=20` renders the search form with the
+service left unselected and "Find Traces" disabled, so no search runs and no
+result row exists to click. That is a defect in the plan's steps, not in the
+predicates, and it is recorded rather than tuned away. See Q26.
+
+> *Defect record, day 3.* The superseded sketch: "**actual**: `element_absent`
+> on the back-to-search control. **expected**: `element_visible` on the
+> back-to-search control. The fix is `{ replace: true, state: location.state }`
+> in `update-ui-find.ts` ... The strongest entry in the set." The
+> `update-ui-find.ts` change is real but it is not what makes this click
+> behave differently; the `preventDefault()` in `ClickToCopy.tsx` is.
+
+**This is worth generalising before the other six plans are authored.** The
+day-2 triage read issue text and fix diffs, but it inferred the *expected*
+behaviour from the issue rather than from the fix. Where a maintainer fixes a
+bug differently from how the reporter framed it, a predicate pair derived from
+the issue will be wrong. Every remaining entry needs its expected predicate
+derived from the fix diff, not from the issue's "Expected behavior" section.

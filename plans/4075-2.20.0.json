@@ -1,0 +1,152 @@
+{
+  "plan_version": 1,
+  "issue": {
+    "repo": "jaegertracing/jaeger-ui",
+    "number": 4075,
+    "url": "https://github.com/jaegertracing/jaeger-ui/issues/4075",
+    "title": "Back-to-search arrow missing when opening trace via trace ID click in search results",
+    "fix_commit": "68bfe1b58d",
+    "fix_pr": 4080,
+    "last_release_without": "2.19.0",
+    "first_release_with": "2.20.0"
+  },
+  "app": {
+    "name": "jaeger",
+    "version": "2.20.0",
+    "ui_port": 16686,
+    "otlp_port": 4318,
+    "read_only_ui": true
+  },
+  "seeds": [
+    {
+      "id": "s1",
+      "endpoint": "/v1/traces",
+      "expected_response": {
+        "status": 200
+      },
+      "payload": {
+        "resourceSpans": [
+          {
+            "resource": {
+              "attributes": [
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "thrice-4075"
+                  }
+                }
+              ]
+            },
+            "scopeSpans": [
+              {
+                "scope": {
+                  "name": "thrice"
+                },
+                "spans": [
+                  {
+                    "traceId": "4075000000000000000000000000abcd",
+                    "spanId": "4075000000000001",
+                    "name": "thrice-root",
+                    "kind": 2,
+                    "startOffsetMs": 4000,
+                    "endOffsetMs": 1000
+                  },
+                  {
+                    "traceId": "4075000000000000000000000000abcd",
+                    "spanId": "4075000000000002",
+                    "parentSpanId": "4075000000000001",
+                    "name": "thrice-child",
+                    "kind": 3,
+                    "startOffsetMs": 3500,
+                    "endOffsetMs": 1500
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "steps": [
+    {
+      "id": "st1",
+      "action": "goto",
+      "args": {
+        "path": "/search?service=thrice-4075&lookback=1h&limit=20"
+      },
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st2",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ResultItemTitle"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st3",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ResultItemTitle--idExcerpt"
+        }
+      ],
+      "timeout_ms": 15000
+    },
+    {
+      "id": "st4",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ResultItemTitle--idExcerpt"
+        },
+        {
+          "by": "role",
+          "value": "button",
+          "name_re": "Copy to clipboard"
+        }
+      ],
+      "timeout_ms": 15000
+    },
+    {
+      "id": "st5",
+      "action": "wait_for",
+      "args": {
+        "ms": 2500
+      },
+      "timeout_ms": 5000
+    }
+  ],
+  "assertion_step_ids": [
+    "st2",
+    "st5"
+  ],
+  "actual_predicate": {
+    "type": "element_visible",
+    "args": {
+      "locator": {
+        "by": "css",
+        "value": ".TracePageHeader"
+      }
+    },
+    "summary": "clicking the trace ID navigated to a trace page"
+  },
+  "expected_predicate": {
+    "type": "element_visible",
+    "args": {
+      "locator": {
+        "by": "css",
+        "value": ".SearchResults"
+      }
+    },
+    "summary": "clicking the trace ID copied it and left the search page in place"
+  },
+  "notes": "Predicate pair corrected on day 3 against the fix diff, and it differs from the day-2 sketch in docs/corpus-candidates.md. The sketch assumed the fix makes the back arrow appear, so it proposed element_absent/element_visible on .TracePageHeader--back. Reading the diff shows the maintainers fixed it differently: ClickToCopy.whenClicked gained e.preventDefault(), so on 2.20.0 clicking the trace ID copies and does NOT navigate at all. The back arrow is absent on BOTH releases after this click (on 2.20.0 because you never leave search), so the sketched pair would return REPRODUCED on both and score the entry incorrect for a reason that has nothing to do with thrice. The defect is really 'clicking the trace ID navigates, losing router state and with it the back arrow'. On 2.19.0 stopPropagation blocks react-router's handler but the native anchor default still fires, so the browser does a full page load and location.state.fromSearch is lost; TracePageHeader renders the back Link only when toSearch is truthy, which is location.state.fromSearch. So 'navigation happened' is the observable that separates the releases."
+}

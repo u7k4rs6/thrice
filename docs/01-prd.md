@@ -82,20 +82,40 @@ Precision is TP / (TP + FP): when thrice says a bug reproduces, how often is the
 
 | Criterion | Target | Justification |
 |---|---|---|
-| Corpus entries built and run | **8** (floor 5, stretch 12) | Bounded by plan-authoring time, not budget. See below. |
-| Attempts executed | 16 (two per entry) | One per version per entry. |
+| Corpus entries built and run | **7** (floor 5, no stretch) | Bounded by the release window, not by plan-authoring time and not by predicate expressiveness. See below. |
+| Attempts executed | 14 (two per entry) | One per version per entry. |
 | Corpus correctness reported with precision and recall | Yes, whatever the number is | The result is the deliverable. A low number is a finding. |
 | INCONCLUSIVE rate reported separately | Yes | Never folded into correctness. |
 | Recording published | 1, 30 to 45 seconds | The reviewer's primary artifact. |
-| Repo public with report pages for every attempt | Yes | 16 report pages are the evidence. |
+| Repo public with report pages for every attempt | Yes | 14 report pages are the evidence. |
 | Cookbook fork with `examples/thrice-jaeger` | Yes | Satisfies the literal fork requirement. |
 | Credits spent for the week | Under $3.00 of $20.00 | Section 8. |
 
-**Why 8 entries.** Not budget: at Starter rates 16 attempts cost about $0.29 (section 8), so budget permits hundreds. The binding constraint is hand-authoring a plan per entry. Each entry means reading the issue, finding the fixing commit, identifying the last buggy release and the first fixed release, writing OTLP seed payloads that produce the reported state, writing the step list, writing both predicates, and then debugging all of it against real runs because the first draft never works. Realistically 60 to 90 minutes for the first two entries and 30 to 45 once a template exists. Days 2 to 6 have to build the tool as well, so roughly 8 to 10 hours total go to plan authoring across the week. That is 8 entries with the early ones slow, 5 if the tool fights back, 12 if the corpus turns out to be unusually uniform.
+**Why 7 entries, and why there is no stretch figure.** Day-2 triage (`docs/corpus-candidates.md`) surveyed all 146 jaeger-ui issues closed in the window, took the 44 labelled `bug` and completed, and found exactly **7 that qualify**. The ceiling is not plan-authoring time and it is not predicate expressiveness. **It is the 2.14.0 to 2.20.0 release window** that gate G7 established: an entry needs both a buggy and a fixed release inside it, and most candidates do not have one.
 
-Each entry needs snapshots for two Jaeger versions, so 8 entries could need up to 16 snapshot builds. Versions will overlap across entries, so the realistic figure is 10 to 12. G7 exists because the whole corpus design rests on being able to build a snapshot per version at all.
+A stretch figure would be dishonest here. There is no eighth entry to reach for: the pool is exhausted, and getting to 8 would mean promoting a MARGINAL candidate, which is exactly what the floor of 5 exists to prevent. If the number moves it will move down, when an entry turns out not to reproduce as triaged, not up.
 
-Half-working on day 7 is still shippable. The minimum artifact: G1, G5, G2, G7 and G3 answered in writing, one snapshot pair built, and a single corpus entry run on both versions with two report pages showing the expected REPRODUCED and NOT_REPRODUCED. One entry is a worked example; 8 is a measurement. Both are honest.
+**Exclusion breakdown, reportable as a result.** This is a finding about the method, not bookkeeping, and it belongs in the README on day 7. Of 44 candidates, 35 were excluded, and **22 of those 35 failed on release-pair availability alone (criterion C5)**, not on anything to do with what thrice can express:
+
+| Exclusion cause | Count | Note |
+|---|---|---|
+| C5, fix landed after v2.20.0 | 10 | No buildable fixed release |
+| C5, no identifiable fix commit | 11 | The referenced PR was closed unmerged, so ground truth is unavailable |
+| C5, fix already in v2.14.0 | 1 | No buildable buggy release |
+| **C5 subtotal** | **22** | **The dominant cause of exclusion** |
+| C4, pure CSS or contrast | 10 | Nine dark-mode, one overlap-on-resize |
+| C2, nothing user-observable | 2 | One refactor, one test-only defect |
+| C1, needs an external backend | 1 | SPM requires Prometheus |
+
+The honest reading: for two thirds of the excluded issues thrice could have produced a verdict, and the obstacle was that the versions needed to check it against do not exist as buildable releases. That bounds any tool built this way, not just this one, and it is a more interesting thing to report than a correctness percentage.
+
+Snapshots needed: **five, not fourteen**. The 7 entries cluster onto four adjacent release pairs (v2.16.0 to v2.17.0, v2.17.0 to v2.18.0, v2.18.0 to v2.19.0, v2.19.0 to v2.20.0), so the corpus needs snapshots for v2.16.0, v2.17.0, v2.18.0, v2.19.0 and v2.20.0 only.
+
+> *Defect record, day 3.* Previously: "**Why 8 entries.** Not budget: at Starter rates 16 attempts cost about $0.29 (section 8), so budget permits hundreds. The binding constraint is hand-authoring a plan per entry ... That is 8 entries with the early ones slow, 5 if the tool fights back, 12 if the corpus turns out to be unusually uniform." The reasoning was sound and the conclusion was wrong: plan-authoring time would indeed have been the binding constraint if the supply of candidates were unlimited, and it is not. Day-2 triage replaced an estimate with a count.
+
+Half-working on day 7 is still shippable. The minimum artifact: G1, G5, G2, G7 and G3 answered in writing, one snapshot pair built, and a single corpus entry run on both versions with two report pages showing the expected REPRODUCED and NOT_REPRODUCED. One entry is a worked example; 7 is a measurement. Both are honest.
+
+Three of the seven share the v2.19.0 to v2.20.0 pair, so a problem with that pair costs three entries at once. #4075 is authored first, being both the cleanest entry and a canary for that pair.
 
 > *Defect record, C2.* Previously: "Issues attempted end to end, 6 to 10" and "Verdicts posted, 3 to 5, or 0 with the kill criterion applied. Conditional on the day-1 invitation."
 
