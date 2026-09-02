@@ -15,8 +15,32 @@ import time
 from pathlib import Path
 from typing import Any
 
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+
 from ..plan.schema import Plan
 from ..score.predicates import build_locator, evaluate
+
+
+def resolve_url(base_url: str, path: str) -> str:
+    """Join a plan's root-relative path onto the environment's base URL.
+
+    Not string concatenation. The preview URL carries a signed `pt_token` in its
+    query string, so `base + path` appends the path to the QUERY, producing
+    `https://host/?pt_token=XYZ/trace/abc`. The browser then loads `/`, which
+    jaeger-ui renders as the Search page whatever path was asked for.
+
+    That is how a day-5 run put four attempts on the search page while asking
+    for /trace/<id>, and why #4075 appeared to work: it asked for /search and
+    `/` happens to render Search, so the mistake was invisible on the only plan
+    that had been run until then.
+
+    Query parameters from the plan's path merge over the base URL's, so a plan
+    can pass its own params without dropping the token.
+    """
+    base = urlsplit(base_url)
+    raw_path, _, raw_query = path.partition("?")
+    merged = dict(parse_qsl(base.query)) | dict(parse_qsl(raw_query))
+    return urlunsplit((base.scheme, base.netloc, raw_path or "/", urlencode(merged), ""))
 
 STEP_SETTLE_MS = 1200
 
@@ -90,7 +114,7 @@ async def run_one(
                                               "action": step.action, "locator_index": None}
                         try:
                             if step.action == "goto":
-                                await page.goto(base_url.rstrip("/") + step.args["path"],
+                                await page.goto(resolve_url(base_url, step.args["path"]),
                                                 wait_until="domcontentloaded",
                                                 timeout=step.timeout_ms)
                             elif step.action == "wait_for":

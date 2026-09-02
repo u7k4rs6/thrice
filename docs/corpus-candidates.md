@@ -258,7 +258,9 @@ Second, three of the seven come from the same v2.19.0 to v2.20.0 pair. If that p
 - **Q24** Does the v2.15.0 / v2.15.1 shared UI commit mean any other release pair also shares a pointer? Checked for these nine and it does not, but worth re-checking if the window ever widens.
 - **Q25** What makes a sandbox "Not snapshottable"? `snapshot()` returned 409 on four consecutive attempts on day 3, including on a trivial freshly created sandbox with zero other sandboxes live and only two snapshots stored, then succeeded normally twenty minutes later. Ruled out: concurrent-sandbox state and a snapshot quota. Same 409 family as day 1's `Not revertable`. Treated as transient, and the environment manager now falls back to building in place.
 - **Q27** How should a plan pin the search result view mode? 2.19.0 defaults to List and 2.20.0 to Table, and `.ResultItemTitle` exists only in List. Either add an explicit step clicking the List toggle, or use locators valid in both views. Affects five of the seven entries.
-- **Q28** Why is the antd option click flaky? The frame shows the option visible when the click timed out, and the identical step passed 3/3 on the other release. Suspect a race between the dropdown's open animation and the click.
+- **Q28** *Resolved on day 5.* The antd option click was never a locator problem: the runner records `locator_index=0` on every run, so the CSS selector always matched. It was timing. The click measured 5.5s on 2.19.0 and 14.6s on 2.20.0 against a 15s budget. Fixed by waiting for the option to be visible before clicking and raising the dropdown timeouts to 30s.
+- **Q29 (new)** Should the runner assert that a `goto` actually landed on the requested path? The day-5 URL bug would have been caught immediately by a post-navigation check that `page.url`'s path matches the plan's, instead of surviving three days behind a plan that only asked for the default route.
+- **Q28-old** Why is the antd option click flaky? The frame shows the option visible when the click timed out, and the identical step passed 3/3 on the other release. Suspect a race between the dropdown's open animation and the click.
 - **Q26** *Resolved on day 4.* How does a plan make jaeger-ui actually run a search? `/search?service=<svc>&lookback=1h&limit=20` applies lookback and limit but leaves the service unselected and "Find Traces" disabled, so no search executes. Likely the services list loads asynchronously and the query param is applied before the option exists. Blocks #4075 and every other entry whose steps start from search results, which is most of them.
 
 ---
@@ -365,3 +367,63 @@ are written rather than after. Recorded as Q27.
 > left the entry "not yet proven". It is now proven on one side only. The
 > predicates themselves are sound: on 2.19.0 `actual` held and `expected`
 > failed in all three runs, exactly as derived from the fix diff.
+
+---
+
+## Day 5 results: three entries landed, 3 of 3 correct
+
+| Entry | Buggy release | Fixed release | Correct? |
+|---|---|---|---|
+| **#4075** back-to-search arrow | 2.19.0 **REPRODUCED 3/3** | 2.20.0 **NOT_REPRODUCED 3/3** | yes |
+| **#3571** detail-row hierarchy guides | 2.16.0 **REPRODUCED 3/3** | 2.17.0 **NOT_REPRODUCED 3/3** | yes |
+| **#3804** expander not keyboard reachable | 2.17.0 **REPRODUCED 3/3** | 2.18.0 **NOT_REPRODUCED 3/3** | yes |
+
+Every run completed; no INCONCLUSIVE in the final set. On each buggy release
+the actual predicate held and the expected failed, and on each fixed release
+exactly the reverse, which is the D4 rule doing what it was written to do.
+
+### Cost, measured
+
+| Entry | sandbox-s | browser-s | USD |
+|---|---|---|---|
+| #3571 | 92.0 | 217.3 | $0.0075 |
+| #3804 | 133.9 | 325.7 | $0.0112 |
+| #4075 | 167.7 | 450.3 | $0.0152 |
+| **mean per entry** | | | **$0.0113** |
+
+An entry costs about **one cent** to run once both sides are authored and the
+snapshots exist. Cost is not a constraint on corpus size at any plausible
+number. #4075 costs twice #3571 because its plan has 13 steps against 4, and
+step count drives browser-seconds almost linearly.
+
+### H3 mitigation works
+
+#4075's plan now pins the results view mode with an explicit step (click the
+List radio) rather than branching per version. One plan, valid on both sides,
+and the pair scored correctly. That is the hazard-H3 mitigation proposed on day
+5 confirmed in practice rather than in principle.
+
+### A harness bug that had been hiding behind a lucky path
+
+Both new entries failed their first run with `locator_miss` on `.span-name`,
+across all four attempts. The captured frame showed the **search page with a
+spinner**, not the trace page they had asked for.
+
+The cause was in the runner, not in either plan: the base URL is a preview URL
+carrying `?pt_token=...`, and the runner built targets by string concatenation,
+so `/trace/<id>` was appended to the **query string**:
+
+```
+https://host/?pt_token=XYZ  +  /trace/abc  ->  https://host/?pt_token=XYZ/trace/abc
+```
+
+The browser then loads `/`, and jaeger-ui renders `/` as the Search page
+whatever was asked for. **#4075 had been passing through this bug the whole
+time**: its first step asks for `/search`, and `/` happens to render Search, so
+the defect was invisible on the only plan that had ever been run. It surfaced
+the moment a plan asked for a path that is not the default route.
+
+Fixed with a proper URL join that preserves the token and merges query
+parameters. Worth recording as a fourth hazard in spirit: **a harness defect can
+hide behind a plan that only ever exercises the default route**, and the more
+plans there are, the sooner such a defect shows up. Two entries were enough.
