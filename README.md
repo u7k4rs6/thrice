@@ -7,6 +7,55 @@ model what it saw.
 
 It was then measured against known answers.
 
+## What is implemented
+
+thrice is a **validated vertical slice, not a complete implementation of its own
+spec.** The plan schema declares more actions and predicate types than the
+runner and evaluator support, and the gap is enforced rather than hidden: a plan
+using an unimplemented action or predicate is **rejected by the validator before
+anything launches**, with the message "specified but not implemented yet". It
+does not fail partway through a run.
+
+**Actions: 4 of 8 declared are accepted, and one of those four does nothing.**
+
+| Action | Status |
+|---|---|
+| `goto` | implemented |
+| `click` | implemented |
+| `wait_for` | implemented (locator or fixed delay) |
+| `assert` | accepted by the validator, but a no-op in the runner. Predicates are evaluated after the last step, not at an `assert` step |
+| `fill` | declared, not implemented |
+| `press` | declared, not implemented |
+| `select` | declared, not implemented |
+| `scroll` | declared, not implemented |
+
+**Predicates: 4 of 10 declared are implemented.**
+
+| Predicate | Status |
+|---|---|
+| `element_visible` | implemented |
+| `element_absent` | implemented |
+| `text_present` | implemented (added on day 6 for #3468) |
+| `text_absent` | implemented, unused by the corpus |
+| `url_matches` | declared, not implemented |
+| `console_error` | declared, not implemented |
+| `network_response` | declared, not implemented |
+| `attribute_equals` | declared, not implemented |
+| `count_equals` | declared, not implemented |
+| `screenshot_region_digest_equals` | declared, not implemented |
+
+**Every corpus entry was authored within the implemented subset.** Across all
+twelve plans the actions used are `goto` (12), `wait_for` (56) and `click` (36),
+and the predicates used are `element_visible` (12), `element_absent` (8) and
+`text_present` (4). Nothing in the results below depends on an unimplemented
+feature.
+
+The consequence worth stating: the corpus was constrained by what the runner can
+do, not only by what the release window allowed. An entry needing keyboard input
+(`press`), form entry (`fill`), or a console-error assertion could not have been
+authored at all, whatever its release pair looked like. #4131 was excluded partly
+for a related reason, and that exclusion is in the count below.
+
 ## The result
 
 thrice was validated against a corpus of **already-fixed jaeger-ui issues**,
@@ -141,6 +190,14 @@ selecting for non-flaky behaviour, and the excluded candidates include exactly
 the timing-sensitive cases where flakiness would live. But the design was
 validated on a corpus chosen to make it redundant, and the divergence differ is
 left specified and unbuilt because there is nothing here for it to align.
+
+**Next, and what would actually settle it:** a second corpus of deliberately
+nondeterministic cases with a *controlled* nondeterminism source, so that the
+expected flake rate is known in advance and the three-run mechanism can be
+scored against it the way the current corpus scores the verdicts. The present
+corpus cannot do this, because selecting for entries reproducible from a small
+deterministic seed is close to selecting for non-flakiness. That was out of
+scope for a seven-day build.
 
 ## What thrice does not do
 
