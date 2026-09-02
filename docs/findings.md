@@ -139,7 +139,7 @@ corpus diversity over corpus size.
 
 ---
 
-## F5. Eighteen runs produced zero divergence: the three-run mechanism is unexercised
+## F5. Sixty-three runs produced zero divergence: the three-run mechanism is unexercised
 
 **Claim, stated plainly because it is the most important limitation of this
 build: thrice's central design choice is untested by its own corpus.**
