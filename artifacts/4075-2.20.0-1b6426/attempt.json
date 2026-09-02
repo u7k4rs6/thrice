@@ -1,0 +1,436 @@
+{
+  "attempt_id": "4075-2.20.0-1b6426",
+  "plan_file": "plans/4075-2.20.0.json",
+  "issue": {
+    "repo": "jaegertracing/jaeger-ui",
+    "number": 4075,
+    "url": "https://github.com/jaegertracing/jaeger-ui/issues/4075",
+    "title": "Back-to-search arrow missing when opening trace via trace ID click in search results",
+    "fix_commit": "68bfe1b58d",
+    "fix_pr": 4080,
+    "last_release_without": "2.19.0",
+    "first_release_with": "2.20.0"
+  },
+  "app": {
+    "name": "jaeger",
+    "version": "2.20.0"
+  },
+  "started_at": "2026-09-02T17:45:34Z",
+  "env": {
+    "version": "2.20.0",
+    "snapshot": {
+      "version": "2.20.0",
+      "snapshot_name": "thrice-jaeger-2.20.0-ready",
+      "reused": true,
+      "snapshot_id": "snap_dl4yditus22a"
+    },
+    "path": "fork",
+    "fork_seconds": 10.34,
+    "health_seconds": 2.5
+  },
+  "seeds": [
+    {
+      "seed_id": "s1",
+      "status": "200",
+      "ok": true
+    }
+  ],
+  "seed_visible": {
+    "services": [
+      "jaeger",
+      "thrice-4075"
+    ],
+    "traces": 1,
+    "spans": 2
+  },
+  "preview": {
+    "has_pt_token": true,
+    "seconds_to_200": 1.03,
+    "status_sequence": [
+      200
+    ]
+  },
+  "runs": [
+    {
+      "run_index": 0,
+      "events": [
+        {
+          "step_id": "st1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "outcome": "ok",
+          "t_ms": 692
+        },
+        {
+          "step_id": "st2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5306
+        },
+        {
+          "step_id": "st3",
+          "seq": 2,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7766
+        },
+        {
+          "step_id": "st3b",
+          "seq": 3,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 3811
+        },
+        {
+          "step_id": "st4",
+          "seq": 4,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5527
+        },
+        {
+          "step_id": "st5",
+          "seq": 5,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2898
+        },
+        {
+          "step_id": "st6",
+          "seq": 6,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7332
+        },
+        {
+          "step_id": "st6b",
+          "seq": 7,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2862
+        },
+        {
+          "step_id": "st6c",
+          "seq": 8,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7403
+        },
+        {
+          "step_id": "st7",
+          "seq": 9,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "43411401c8b4e307",
+          "t_ms": 5896
+        },
+        {
+          "step_id": "st8",
+          "seq": 10,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2870
+        },
+        {
+          "step_id": "st9",
+          "seq": 11,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5282
+        },
+        {
+          "step_id": "st10",
+          "seq": 12,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "249ba6910c4020b6",
+          "t_ms": 3995
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "not visible: TimeoutError",
+      "expected_predicate_held": true,
+      "expected_detail": "visible",
+      "reproduced": false,
+      "run_seconds": 68.06,
+      "frames": 53,
+      "console_errors": [],
+      "browser_seconds": 74.8
+    },
+    {
+      "run_index": 1,
+      "events": [
+        {
+          "step_id": "st1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "outcome": "ok",
+          "t_ms": 592
+        },
+        {
+          "step_id": "st2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5832
+        },
+        {
+          "step_id": "st3",
+          "seq": 2,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7856
+        },
+        {
+          "step_id": "st3b",
+          "seq": 3,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 3808
+        },
+        {
+          "step_id": "st4",
+          "seq": 4,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5616
+        },
+        {
+          "step_id": "st5",
+          "seq": 5,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 3053
+        },
+        {
+          "step_id": "st6",
+          "seq": 6,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7489
+        },
+        {
+          "step_id": "st6b",
+          "seq": 7,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2724
+        },
+        {
+          "step_id": "st6c",
+          "seq": 8,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 8618
+        },
+        {
+          "step_id": "st7",
+          "seq": 9,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "7c5e2592d229939e",
+          "t_ms": 4784
+        },
+        {
+          "step_id": "st8",
+          "seq": 10,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2760
+        },
+        {
+          "step_id": "st9",
+          "seq": 11,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5364
+        },
+        {
+          "step_id": "st10",
+          "seq": 12,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "1455a60cbb73928c",
+          "t_ms": 4092
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "not visible: TimeoutError",
+      "expected_predicate_held": true,
+      "expected_detail": "visible",
+      "reproduced": false,
+      "run_seconds": 68.92,
+      "frames": 54,
+      "console_errors": [],
+      "browser_seconds": 75.0
+    },
+    {
+      "run_index": 2,
+      "events": [
+        {
+          "step_id": "st1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "outcome": "ok",
+          "t_ms": 557
+        },
+        {
+          "step_id": "st2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5866
+        },
+        {
+          "step_id": "st3",
+          "seq": 2,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7961
+        },
+        {
+          "step_id": "st3b",
+          "seq": 3,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 3837
+        },
+        {
+          "step_id": "st4",
+          "seq": 4,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5491
+        },
+        {
+          "step_id": "st5",
+          "seq": 5,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 3043
+        },
+        {
+          "step_id": "st6",
+          "seq": 6,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7205
+        },
+        {
+          "step_id": "st6b",
+          "seq": 7,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2749
+        },
+        {
+          "step_id": "st6c",
+          "seq": 8,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 9111
+        },
+        {
+          "step_id": "st7",
+          "seq": 9,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "42667a9504f7f141",
+          "t_ms": 5965
+        },
+        {
+          "step_id": "st8",
+          "seq": 10,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2739
+        },
+        {
+          "step_id": "st9",
+          "seq": 11,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5426
+        },
+        {
+          "step_id": "st10",
+          "seq": 12,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "a891220710a8a0ba",
+          "t_ms": 3973
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "not visible: TimeoutError",
+      "expected_predicate_held": true,
+      "expected_detail": "visible",
+      "reproduced": false,
+      "run_seconds": 70.28,
+      "frames": 54,
+      "console_errors": [],
+      "browser_seconds": 75.8
+    }
+  ],
+  "verdict": "NOT_REPRODUCED",
+  "runs_total": 3,
+  "runs_reproduced": 0,
+  "reason": null,
+  "reaped": [
+    "ok"
+  ],
+  "sandbox_killed": true,
+  "cost": {
+    "sandbox_seconds": 167.7,
+    "browser_seconds": 450.3,
+    "usd": 0.01516,
+    "attempt_ceiling_usd": 0.1,
+    "over_attempt_ceiling": false
+  }
+}

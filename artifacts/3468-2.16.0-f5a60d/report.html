@@ -1,0 +1,50 @@
+<!doctype html><html lang=en><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><title>thrice 3468 2.16.0 INCONCLUSIVE</title><style>
+:root{
+  --bg:#fbfbfa; --fg:#191918; --muted:#6f6f6a; --line:#e3e3df; --panel:#ffffff;
+  --held:#16794a; --failed:#b3261e; --amber:#a8620a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.wrap{max-width:1400px;margin:0 auto;padding:28px 22px 64px}
+h1,h2,h3{font-weight:600;margin:0}
+.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);
+  margin:0 0 8px}
+header.hd{border-bottom:2px solid var(--fg);padding-bottom:18px;margin-bottom:22px}
+.verdict{font-size:40px;line-height:1.1;letter-spacing:-.01em;margin:2px 0 10px}
+.v-REPRODUCED{color:var(--failed)} .v-NOT_REPRODUCED{color:var(--held)}
+.v-FLAKY{color:var(--amber)} .v-INCONCLUSIVE{color:var(--muted)}
+.facts{display:flex;flex-wrap:wrap;gap:8px 26px;color:var(--muted);font-size:13px}
+.facts b{color:var(--fg);font-weight:600}
+a{color:inherit;text-underline-offset:2px}
+section{margin:26px 0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:14px 16px}
+table.plan{border-collapse:collapse;width:100%;font-size:13px}
+table.plan td{border-top:1px solid var(--line);padding:4px 10px 4px 0;vertical-align:top}
+table.plan tr:first-child td{border-top:0}
+.pill{display:inline-block;padding:1px 7px;border:1px solid var(--line);border-radius:10px;
+  font-size:12px;color:var(--muted)}
+.pred{display:grid;grid-template-columns:88px 1fr;gap:6px 12px;font-size:13px;margin-top:8px}
+.pred .k{color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:12px}
+.runs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:900px){.runs{grid-template-columns:1fr}}
+.run{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:12px 14px}
+.run h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+  margin-bottom:8px}
+ol.steps{list-style:none;margin:0;padding:0;font-size:13px}
+ol.steps li{display:grid;grid-template-columns:52px 1fr auto;gap:8px;padding:3px 0;
+  border-top:1px dotted var(--line);align-items:baseline}
+ol.steps li:first-child{border-top:0}
+.sid{color:var(--muted)}
+.ok{color:var(--held)} .bad{color:var(--failed)} .warn{color:var(--amber)}
+.dur{color:var(--muted);font-size:12px;white-space:nowrap}
+.shot{margin:8px 0 2px;border:1px solid var(--line);border-radius:2px;display:block;width:100%}
+.shotcap{font-size:12px;color:var(--muted);margin-bottom:10px}
+.pv{margin-top:10px;padding-top:8px;border-top:1px solid var(--line);font-size:13px}
+.divergence{border:1px solid var(--amber);border-left-width:4px;background:#fffaf2;
+  padding:10px 14px;margin:16px 0;font-size:13px}
+video{width:100%;max-width:900px;border:1px solid var(--line);border-radius:3px;background:#000}
+.foot{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:12px}
+code{background:#f2f2ef;padding:1px 5px;border-radius:2px}
+</style><div class=wrap><header class=hd><p class=eyebrow>thrice attempt 3468-2.16.0-f5a60d</p><h1 class='verdict v-INCONCLUSIVE'>INCONCLUSIVE 0/3 completed</h1><div class=facts><span><b><a href='https://github.com/jaegertracing/jaeger-ui/issues/3468'>jaegertracing/jaeger-ui#3468</a></b> TraceDiff slot B search populates slot A instead</span></div><div class=facts style='margin-top:8px'><span>jaeger <b>2.16.0</b></span><span>fix <b>10f8cf1b98</b> (#3473)</span><span>pair <b>2.16.0</b> to <b>2.17.0</b></span><span>cost <b>$0.00386</b></span><span>45.3 sandbox-s, 113.1 browser-s</span><span>2026-09-02T18:19:34Z</span></div></header><div class=divergence><b>Reason:</b> locator_miss </div><section><p class=eyebrow>Plan</p><div class=panel><div class=facts><span>2 seed(s) to <b>/v1/traces</b></span><span>3 steps</span><span>environment <b>fork</b></span><span>seed visible: <b>2 trace(s), 5 span(s)</b></span></div><table class=plan><tr><td class=sid>st1</td><td><span class=pill>goto</span></td><td>/trace/...3468000000000000000000000000bbbb?cohort=3468000000000000000000000000aaaa&amp;cohort=3468000000000000000000000000bbbb</td></tr><tr><td class=sid>st2</td><td><span class=pill>wait_for</span></td><td>[data-testid=&#x27;TraceDiffHeader--traceHeader&#x27;]</td></tr><tr><td class=sid>st3</td><td><span class=pill>wait_for</span></td><td>2000 ms</td></tr></table><div class=pred><span class=k>actual</span><span><code>text_present</code> /thrice-beta/ within css=[data-testid=&#x27;TraceDiffHeader--traceHeader&#x27;]<br><span style='color:var(--muted)'>slot A shows the trace that was put in slot B</span></span><span class=k>expected</span><span><code>text_present</code> /thrice-alpha/ within css=[data-testid=&#x27;TraceDiffHeader--traceHeader&#x27;]<br><span style='color:var(--muted)'>slot A shows the trace that belongs in slot A</span></span></div><p style='color:var(--muted);font-size:12px;margin:10px 0 0'>A run counts as reproduced only if the actual predicate holds and the expected predicate fails. Both are evaluated on every run.</p></div></section><section><p class=eyebrow>Three runs</p><div class=runs><div class=run><h3>run 0 &middot; 2 frames &middot; 37.7s</h3><ol class=steps><li><span class=sid>st1</span><span>goto</span><span class='ok'>ok<span class=dur> 747ms</span></span></li><li><span class=sid>st2</span><span>wait_for</span><span class='bad'>locator_miss<span class=dur> </span></span></li></ol><div class=pv><span class=bad>incomplete: locator_miss</span><br><span class=dur>no locator resolved for step st2 (css=[data-testid=&#x27;TraceDiffHeader--traceHeader&#x27;]: TimeoutError)</span></div></div><div class=run><h3>run 1 &middot; 3 frames &middot; 37.7s</h3><ol class=steps><li><span class=sid>st1</span><span>goto</span><span class='ok'>ok<span class=dur> 835ms</span></span></li><li><span class=sid>st2</span><span>wait_for</span><span class='bad'>locator_miss<span class=dur> </span></span></li></ol><div class=pv><span class=bad>incomplete: locator_miss</span><br><span class=dur>no locator resolved for step st2 (css=[data-testid=&#x27;TraceDiffHeader--traceHeader&#x27;]: TimeoutError)</span></div></div><div class=run><h3>run 2 &middot; 3 frames &middot; 37.7s</h3><ol class=steps><li><span class=sid>st1</span><span>goto</span><span class='ok'>ok<span class=dur> 854ms</span></span></li><li><span class=sid>st2</span><span>wait_for</span><span class='bad'>locator_miss<span class=dur> </span></span></li></ol><div class=pv><span class=bad>incomplete: locator_miss</span><br><span class=dur>no locator resolved for step st2 (css=[data-testid=&#x27;TraceDiffHeader--traceHeader&#x27;]: TimeoutError)</span></div></div></div></section><section><p class=eyebrow>Screencast</p><div class=runs><div><div class=shotcap>run 0</div><video controls preload=metadata src='run_0.mp4'></video></div><div><div class=shotcap>run 1</div><video controls preload=metadata src='run_1.mp4'></video></div><div><div class=shotcap>run 2</div><video controls preload=metadata src='run_2.mp4'></video></div></div></section><p class=foot>Raw data: <a href='attempt.json'>attempt.json</a> &middot; plan: <a href='3468-2.16.0.json'>3468-2.16.0.json</a> &middot; generated by thrice. Preview URLs and API keys are redacted on write.</p></div></html>

@@ -1,0 +1,263 @@
+{
+  "plan_version": 1,
+  "issue": {
+    "repo": "jaegertracing/jaeger-ui",
+    "number": 4075,
+    "url": "https://github.com/jaegertracing/jaeger-ui/issues/4075",
+    "title": "Back-to-search arrow missing when opening trace via trace ID click in search results",
+    "fix_commit": "68bfe1b58d",
+    "fix_pr": 4080,
+    "last_release_without": "2.19.0",
+    "first_release_with": "2.20.0"
+  },
+  "app": {
+    "name": "jaeger",
+    "version": "2.19.0",
+    "ui_port": 16686,
+    "otlp_port": 4318,
+    "read_only_ui": true
+  },
+  "seeds": [
+    {
+      "id": "s1",
+      "endpoint": "/v1/traces",
+      "expected_response": {
+        "status": 200
+      },
+      "payload": {
+        "resourceSpans": [
+          {
+            "resource": {
+              "attributes": [
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "thrice-4075"
+                  }
+                }
+              ]
+            },
+            "scopeSpans": [
+              {
+                "scope": {
+                  "name": "thrice"
+                },
+                "spans": [
+                  {
+                    "traceId": "4075000000000000000000000000abcd",
+                    "spanId": "4075000000000001",
+                    "name": "thrice-root",
+                    "kind": 2,
+                    "startOffsetMs": 4000,
+                    "endOffsetMs": 1000
+                  },
+                  {
+                    "traceId": "4075000000000000000000000000abcd",
+                    "spanId": "4075000000000002",
+                    "parentSpanId": "4075000000000001",
+                    "name": "thrice-child",
+                    "kind": 3,
+                    "startOffsetMs": 3500,
+                    "endOffsetMs": 1500
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "steps": [
+    {
+      "id": "st1",
+      "action": "goto",
+      "args": {
+        "path": "/search"
+      },
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st2",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-testid=service]"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st3",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-testid=service]"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st3b",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ant-select-item-option[title='thrice-4075']"
+        },
+        {
+          "by": "role",
+          "value": "option",
+          "name_re": "^thrice-4075$"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st4",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ant-select-item-option[title='thrice-4075']"
+        },
+        {
+          "by": "role",
+          "value": "option",
+          "name_re": "^thrice-4075$"
+        },
+        {
+          "by": "text",
+          "value": "thrice-4075"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st5",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-test=submit-btn]:not([disabled])"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st6",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-test=submit-btn]"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st6b",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[aria-label='Results view mode']"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st6c",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ant-radio-button-wrapper:has-text('List')"
+        },
+        {
+          "by": "css",
+          "value": "label.ant-radio-button-wrapper >> nth=0"
+        },
+        {
+          "by": "role",
+          "value": "radio",
+          "name_re": "^List$"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st7",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ResultItemTitle"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st8",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ResultItemTitle--idExcerpt"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st9",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ResultItemTitle--idExcerpt"
+        },
+        {
+          "by": "role",
+          "value": "button",
+          "name_re": "Copy to clipboard"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st10",
+      "action": "wait_for",
+      "args": {
+        "ms": 2500
+      },
+      "timeout_ms": 6000
+    }
+  ],
+  "assertion_step_ids": [
+    "st7",
+    "st10"
+  ],
+  "actual_predicate": {
+    "type": "element_visible",
+    "args": {
+      "locator": {
+        "by": "css",
+        "value": ".TracePageHeader"
+      }
+    },
+    "summary": "clicking the trace ID navigated to a trace page"
+  },
+  "expected_predicate": {
+    "type": "element_visible",
+    "args": {
+      "locator": {
+        "by": "css",
+        "value": ".SearchResults"
+      }
+    },
+    "summary": "clicking the trace ID copied it and left the search page in place"
+  },
+  "notes": "Day 5. Two changes over the day-4 plan, both from measurement rather than guesswork. (1) st4 was not a locator problem: the runner records locator_index=0 on every run, so the CSS selector always matched. It was timing. The option click measured 5.5s on 2.19.0 and 14.6s on 2.20.0 against a 15s budget, so two of three runs on 2.20.0 crossed it. Added st3b to wait for the option to be VISIBLE before clicking, which absorbs the antd dropdown animation, and raised the dropdown timeouts to 30s. (2) st6c pins the results view mode. 2.19.0 defaults to List and 2.20.0 to Table, and .ResultItemTitle exists only in List (hazard H3). The Radio.Group at aria-label='Results view mode' renders in BOTH versions gated only on traceResultsView, never on viewMode, so clicking List is valid and idempotent on both sides. That keeps one plan for the pair rather than branching per version, which matters because two versions running different step lists are no longer running the same test. st6c locator corrected after its first run: role=radio resolves to antd's visually hidden <input>, so the locator matched but the click timed out on actionability. The label wrapper is the clickable element."
+}

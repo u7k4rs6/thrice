@@ -1,0 +1,565 @@
+{
+  "attempt_id": "3967-2.19.0-e3dfe9",
+  "plan_file": "plans/3967-2.19.0.json",
+  "issue": {
+    "repo": "jaegertracing/jaeger-ui",
+    "number": 3967,
+    "url": "https://github.com/jaegertracing/jaeger-ui/issues/3967",
+    "title": "traces selected for comparison disappear when changing search service",
+    "fix_commit": "cd6e0ea940",
+    "fix_pr": 3968,
+    "last_release_without": "2.18.0",
+    "first_release_with": "2.19.0"
+  },
+  "app": {
+    "name": "jaeger",
+    "version": "2.19.0"
+  },
+  "started_at": "2026-09-02T18:37:57Z",
+  "env": {
+    "version": "2.19.0",
+    "snapshot": {
+      "version": "2.19.0",
+      "snapshot_name": "thrice-jaeger-2.19.0-ready",
+      "reused": true,
+      "snapshot_id": "snap_dl4x5fwmhxbj"
+    },
+    "path": "fork",
+    "fork_seconds": 10.07,
+    "health_seconds": 2.59
+  },
+  "seeds": [
+    {
+      "seed_id": "sa",
+      "status": "200",
+      "ok": true
+    },
+    {
+      "seed_id": "sb",
+      "status": "200",
+      "ok": true
+    }
+  ],
+  "seed_visible": {
+    "services": [
+      "jaeger",
+      "thrice-3967-a",
+      "thrice-3967-b"
+    ],
+    "traces": 1,
+    "spans": 2
+  },
+  "preview": {
+    "has_pt_token": true,
+    "seconds_to_200": 1.04,
+    "status_sequence": [
+      200
+    ]
+  },
+  "runs": [
+    {
+      "run_index": 0,
+      "events": [
+        {
+          "step_id": "a1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "landed_path": "/search",
+          "outcome": "ok",
+          "t_ms": 571
+        },
+        {
+          "step_id": "a2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 14366
+        },
+        {
+          "step_id": "a3",
+          "seq": 2,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 6129
+        },
+        {
+          "step_id": "a4",
+          "seq": 3,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 3455
+        },
+        {
+          "step_id": "a5",
+          "seq": 4,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 6087
+        },
+        {
+          "step_id": "a6",
+          "seq": 5,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5009
+        },
+        {
+          "step_id": "a7",
+          "seq": 6,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 6925
+        },
+        {
+          "step_id": "a10",
+          "seq": 7,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "8eae6f32c33f90f0",
+          "t_ms": 5518
+        },
+        {
+          "step_id": "a11",
+          "seq": 8,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7003
+        },
+        {
+          "step_id": "a12",
+          "seq": 9,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7479
+        },
+        {
+          "step_id": "b2",
+          "seq": 10,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 4833
+        },
+        {
+          "step_id": "b3",
+          "seq": 11,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7564
+        },
+        {
+          "step_id": "b4",
+          "seq": 12,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2966
+        },
+        {
+          "step_id": "b5",
+          "seq": 13,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 12368
+        },
+        {
+          "step_id": "b6",
+          "seq": 14,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 4054
+        },
+        {
+          "step_id": "b7",
+          "seq": 15,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7140
+        },
+        {
+          "step_id": "b10",
+          "seq": 16,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 8080
+        },
+        {
+          "step_id": "b11",
+          "seq": 17,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "11c72ac2369ce3fd",
+          "t_ms": 8501
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "1 visible of 1 matching",
+      "expected_predicate_held": true,
+      "expected_detail": "1 visible of 1 matching",
+      "reproduced": false,
+      "run_seconds": 124.65,
+      "frames": 74,
+      "console_errors": [],
+      "browser_seconds": 130.8
+    },
+    {
+      "run_index": 1,
+      "events": [
+        {
+          "step_id": "a1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "landed_path": "/search",
+          "outcome": "ok",
+          "t_ms": 591
+        },
+        {
+          "step_id": "a2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 13963
+        },
+        {
+          "step_id": "a3",
+          "seq": 2,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 6860
+        },
+        {
+          "step_id": "a4",
+          "seq": 3,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 3544
+        },
+        {
+          "step_id": "a5",
+          "seq": 4,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5984
+        },
+        {
+          "step_id": "a6",
+          "seq": 5,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 4345
+        },
+        {
+          "step_id": "a7",
+          "seq": 6,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7832
+        },
+        {
+          "step_id": "a10",
+          "seq": 7,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "8eae6f32c33f90f0",
+          "t_ms": 4928
+        },
+        {
+          "step_id": "a11",
+          "seq": 8,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 6139
+        },
+        {
+          "step_id": "a12",
+          "seq": 9,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5077
+        },
+        {
+          "step_id": "b2",
+          "seq": 10,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5219
+        },
+        {
+          "step_id": "b3",
+          "seq": 11,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 8146
+        },
+        {
+          "step_id": "b4",
+          "seq": 12,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 3064
+        },
+        {
+          "step_id": "b5",
+          "seq": 13,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 10988
+        },
+        {
+          "step_id": "b6",
+          "seq": 14,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 4378
+        },
+        {
+          "step_id": "b7",
+          "seq": 15,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5901
+        },
+        {
+          "step_id": "b10",
+          "seq": 16,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 6498
+        },
+        {
+          "step_id": "b11",
+          "seq": 17,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "11c72ac2369ce3fd",
+          "t_ms": 4500
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "1 visible of 1 matching",
+      "expected_predicate_held": true,
+      "expected_detail": "1 visible of 1 matching",
+      "reproduced": false,
+      "run_seconds": 122.81,
+      "frames": 73,
+      "console_errors": [],
+      "browser_seconds": 129.9
+    },
+    {
+      "run_index": 2,
+      "events": [
+        {
+          "step_id": "a1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "landed_path": "/search",
+          "outcome": "ok",
+          "t_ms": 730
+        },
+        {
+          "step_id": "a2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 16204
+        },
+        {
+          "step_id": "a3",
+          "seq": 2,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 6474
+        },
+        {
+          "step_id": "a4",
+          "seq": 3,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 3478
+        },
+        {
+          "step_id": "a5",
+          "seq": 4,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7781
+        },
+        {
+          "step_id": "a6",
+          "seq": 5,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 3468
+        },
+        {
+          "step_id": "a7",
+          "seq": 6,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 8121
+        },
+        {
+          "step_id": "a10",
+          "seq": 7,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "8eae6f32c33f90f0",
+          "t_ms": 6731
+        },
+        {
+          "step_id": "a11",
+          "seq": 8,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 8068
+        },
+        {
+          "step_id": "a12",
+          "seq": 9,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 3861
+        },
+        {
+          "step_id": "b2",
+          "seq": 10,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 3926
+        },
+        {
+          "step_id": "b3",
+          "seq": 11,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7540
+        },
+        {
+          "step_id": "b4",
+          "seq": 12,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 4703
+        },
+        {
+          "step_id": "b5",
+          "seq": 13,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 11178
+        },
+        {
+          "step_id": "b6",
+          "seq": 14,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2944
+        },
+        {
+          "step_id": "b7",
+          "seq": 15,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 14001
+        },
+        {
+          "step_id": "b10",
+          "seq": 16,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 11662
+        },
+        {
+          "step_id": "b11",
+          "seq": 17,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "11c72ac2369ce3fd",
+          "t_ms": 4689
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "1 visible of 1 matching",
+      "expected_predicate_held": true,
+      "expected_detail": "1 visible of 1 matching",
+      "reproduced": false,
+      "run_seconds": 129.55,
+      "frames": 81,
+      "console_errors": [],
+      "browser_seconds": 135.8
+    }
+  ],
+  "verdict": "NOT_REPRODUCED",
+  "runs_total": 3,
+  "runs_reproduced": 0,
+  "reason": null,
+  "reaped": [
+    "ok"
+  ],
+  "sandbox_killed": true,
+  "cost": {
+    "sandbox_seconds": 424.3,
+    "browser_seconds": 1135.2,
+    "usd": 0.03825,
+    "attempt_ceiling_usd": 0.1,
+    "over_attempt_ceiling": false
+  }
+}

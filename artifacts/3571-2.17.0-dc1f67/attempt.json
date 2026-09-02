@@ -1,0 +1,220 @@
+{
+  "attempt_id": "3571-2.17.0-dc1f67",
+  "plan_file": "plans/3571-2.17.0.json",
+  "issue": {
+    "repo": "jaegertracing/jaeger-ui",
+    "number": 3571,
+    "url": "https://github.com/jaegertracing/jaeger-ui/issues/3571",
+    "title": "Expanded span in the timeline messes up hierarchy view column",
+    "fix_commit": "5f360b497b",
+    "fix_pr": 3572,
+    "last_release_without": "2.16.0",
+    "first_release_with": "2.17.0"
+  },
+  "app": {
+    "name": "jaeger",
+    "version": "2.17.0"
+  },
+  "started_at": "2026-09-02T17:55:26Z",
+  "env": {
+    "version": "2.17.0",
+    "snapshot": {
+      "version": "2.17.0",
+      "snapshot_name": "thrice-jaeger-2.17.0-ready",
+      "reused": true,
+      "snapshot_id": "snap_dl50q1h9wk1b"
+    },
+    "path": "fork",
+    "fork_seconds": 12.11,
+    "health_seconds": 2.62
+  },
+  "seeds": [
+    {
+      "seed_id": "s1",
+      "status": "200",
+      "ok": true
+    }
+  ],
+  "seed_visible": {
+    "services": [
+      "jaeger",
+      "thrice-3571"
+    ],
+    "traces": 1,
+    "spans": 3
+  },
+  "preview": {
+    "has_pt_token": true,
+    "seconds_to_200": 1.34,
+    "status_sequence": [
+      200
+    ]
+  },
+  "runs": [
+    {
+      "run_index": 0,
+      "events": [
+        {
+          "step_id": "st1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "outcome": "ok",
+          "t_ms": 627
+        },
+        {
+          "step_id": "st2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "d303c252fbe0d130",
+          "t_ms": 15463
+        },
+        {
+          "step_id": "st3",
+          "seq": 2,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 6618
+        },
+        {
+          "step_id": "st4",
+          "seq": 3,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "e378a51e91eb4a4a",
+          "t_ms": 3002
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "present and visible",
+      "expected_predicate_held": true,
+      "expected_detail": "visible",
+      "reproduced": false,
+      "run_seconds": 28.82,
+      "frames": 8,
+      "console_errors": [],
+      "browser_seconds": 35.2
+    },
+    {
+      "run_index": 1,
+      "events": [
+        {
+          "step_id": "st1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "outcome": "ok",
+          "t_ms": 946
+        },
+        {
+          "step_id": "st2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "d303c252fbe0d130",
+          "t_ms": 14109
+        },
+        {
+          "step_id": "st3",
+          "seq": 2,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 6117
+        },
+        {
+          "step_id": "st4",
+          "seq": 3,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "e378a51e91eb4a4a",
+          "t_ms": 2970
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "present and visible",
+      "expected_predicate_held": true,
+      "expected_detail": "visible",
+      "reproduced": false,
+      "run_seconds": 27.08,
+      "frames": 8,
+      "console_errors": [],
+      "browser_seconds": 35.0
+    },
+    {
+      "run_index": 2,
+      "events": [
+        {
+          "step_id": "st1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "outcome": "ok",
+          "t_ms": 611
+        },
+        {
+          "step_id": "st2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "d303c252fbe0d130",
+          "t_ms": 18854
+        },
+        {
+          "step_id": "st3",
+          "seq": 2,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5670
+        },
+        {
+          "step_id": "st4",
+          "seq": 3,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "e378a51e91eb4a4a",
+          "t_ms": 2851
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "present and visible",
+      "expected_predicate_held": true,
+      "expected_detail": "visible",
+      "reproduced": false,
+      "run_seconds": 30.95,
+      "frames": 10,
+      "console_errors": [],
+      "browser_seconds": 37.1
+    }
+  ],
+  "verdict": "NOT_REPRODUCED",
+  "runs_total": 3,
+  "runs_reproduced": 0,
+  "reason": null,
+  "reaped": [
+    "ok"
+  ],
+  "sandbox_killed": true,
+  "cost": {
+    "sandbox_seconds": 92.0,
+    "browser_seconds": 217.3,
+    "usd": 0.00749,
+    "attempt_ceiling_usd": 0.1,
+    "over_attempt_ceiling": false
+  }
+}

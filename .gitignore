@@ -1,7 +1,28 @@
+# Secrets and local state
 .env
 .venv/
-artifacts/
 __pycache__/
-*.webm
-*.mp4
 spikes/_scratch/
+
+# Run artifacts are NOT ignored wholesale. docs/03-security-and-access.md
+# requires every corpus attempt's report page to be published, because the
+# corpus result is the deliverable and publishing only the flattering half
+# would make the precision and recall figures meaningless. So the twelve
+# canonical attempts are committed and everything else is ignored.
+artifacts/*
+!artifacts/3468-2.16.0-f5a60d
+!artifacts/3468-2.17.0-ab5fb9
+!artifacts/3571-2.16.0-214ab5
+!artifacts/3571-2.17.0-dc1f67
+!artifacts/3804-2.17.0-8681da
+!artifacts/3804-2.18.0-d54107
+!artifacts/3967-2.18.0-5953d9
+!artifacts/3967-2.19.0-e3dfe9
+!artifacts/4045-2.19.0-39eaa6
+!artifacts/4045-2.20.0-e9edc0
+!artifacts/4075-2.19.0-0302e4
+!artifacts/4075-2.20.0-1b6426
+
+# Raw screencast frames stay out: they are large and redundant with the
+# stitched mp4 in the same directory.
+artifacts/*/run_*_frames/

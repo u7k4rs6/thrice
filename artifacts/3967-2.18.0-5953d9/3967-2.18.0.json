@@ -1,0 +1,351 @@
+{
+  "plan_version": 1,
+  "issue": {
+    "repo": "jaegertracing/jaeger-ui",
+    "number": 3967,
+    "url": "https://github.com/jaegertracing/jaeger-ui/issues/3967",
+    "title": "traces selected for comparison disappear when changing search service",
+    "fix_commit": "cd6e0ea940",
+    "fix_pr": 3968,
+    "last_release_without": "2.18.0",
+    "first_release_with": "2.19.0"
+  },
+  "app": {
+    "name": "jaeger",
+    "version": "2.18.0",
+    "ui_port": 16686,
+    "otlp_port": 4318,
+    "read_only_ui": true
+  },
+  "seeds": [
+    {
+      "id": "sa",
+      "endpoint": "/v1/traces",
+      "expected_response": {
+        "status": 200
+      },
+      "payload": {
+        "resourceSpans": [
+          {
+            "resource": {
+              "attributes": [
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "thrice-3967-a"
+                  }
+                }
+              ]
+            },
+            "scopeSpans": [
+              {
+                "scope": {
+                  "name": "thrice"
+                },
+                "spans": [
+                  {
+                    "traceId": "3967000000000000000000000000aaaa",
+                    "spanId": "3967000000000000",
+                    "name": "alpha-root",
+                    "kind": 2,
+                    "startOffsetMs": 5000,
+                    "endOffsetMs": 1000
+                  },
+                  {
+                    "traceId": "3967000000000000000000000000aaaa",
+                    "spanId": "3967000000000001",
+                    "name": "alpha-child",
+                    "kind": 3,
+                    "startOffsetMs": 4700,
+                    "endOffsetMs": 1150,
+                    "parentSpanId": "3967000000000000"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "sb",
+      "endpoint": "/v1/traces",
+      "expected_response": {
+        "status": 200
+      },
+      "payload": {
+        "resourceSpans": [
+          {
+            "resource": {
+              "attributes": [
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "thrice-3967-b"
+                  }
+                }
+              ]
+            },
+            "scopeSpans": [
+              {
+                "scope": {
+                  "name": "thrice"
+                },
+                "spans": [
+                  {
+                    "traceId": "3967000000000000000000000000bbbb",
+                    "spanId": "3967000000000000",
+                    "name": "beta-root",
+                    "kind": 2,
+                    "startOffsetMs": 4000,
+                    "endOffsetMs": 1000
+                  },
+                  {
+                    "traceId": "3967000000000000000000000000bbbb",
+                    "spanId": "3967000000000001",
+                    "name": "beta-child",
+                    "kind": 3,
+                    "startOffsetMs": 3700,
+                    "endOffsetMs": 1150,
+                    "parentSpanId": "3967000000000000"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "steps": [
+    {
+      "id": "a1",
+      "action": "goto",
+      "args": {
+        "path": "/search"
+      },
+      "timeout_ms": 30000
+    },
+    {
+      "id": "a2",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-testid=service]"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "a3",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-testid=service]"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "a4",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ant-select-item-option[title='thrice-3967-a']"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "a5",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ant-select-item-option[title='thrice-3967-a']"
+        },
+        {
+          "by": "text",
+          "value": "thrice-3967-a"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "a6",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-test=submit-btn]:not([disabled])"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "a7",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-test=submit-btn]"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "a10",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ResultItemTitle"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "a11",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ResultItemTitle--item input[type=checkbox]"
+        },
+        {
+          "by": "css",
+          "value": ".ResultItemTitle--item"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "a12",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".DiffSelection--selectedItems"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "b2",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-testid=service]"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "b3",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-testid=service]"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "b4",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ant-select-item-option[title='thrice-3967-b']"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "b5",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ant-select-item-option[title='thrice-3967-b']"
+        },
+        {
+          "by": "text",
+          "value": "thrice-3967-b"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "b6",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-test=submit-btn]:not([disabled])"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "b7",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-test=submit-btn]"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "b10",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ResultItemTitle"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "b11",
+      "action": "wait_for",
+      "args": {
+        "ms": 2000
+      },
+      "timeout_ms": 5000
+    }
+  ],
+  "assertion_step_ids": [
+    "a10",
+    "b11"
+  ],
+  "actual_predicate": {
+    "type": "element_absent",
+    "args": {
+      "locator": {
+        "by": "css",
+        "value": ".DiffSelection--selectedItems"
+      }
+    },
+    "summary": "the comparison selection vanished when the search service changed"
+  },
+  "expected_predicate": {
+    "type": "element_visible",
+    "args": {
+      "locator": {
+        "by": "css",
+        "value": ".DiffSelection--selectedItems"
+      }
+    },
+    "summary": "the comparison selection survived the new search"
+  },
+  "notes": "Diff-derived. The fix at cd6e0ea940 changes the cohort store from holding trace IDs to holding full TraceSummary objects, so a selected trace survives a search that no longer returns it. Matches the issue's stated expectation, so no H2 divergence here. This entry DOES start from search results, twice, so it reuses the #4075 view-mode pin block verbatim (click the List radio after each search) rather than reauthoring it. The second search block drops its leading goto because the page is already loaded; re-navigating would reset the very state under test. Day 6: the view-mode pin steps were REMOVED for this pair. The List/Table Radio.Group and TraceTable do not exist at 2.18.0 at all; they arrive in 2.19.0. Waiting for [aria-label='Results view mode'] therefore timed out on the buggy side. This is a third instance of hazard H3 and it sharpens the rule: the mitigation for H3 is itself version-dependent, because you cannot pin a control that does not exist yet. Neither 2.18.0 (no toggle) nor 2.19.0 (defaults to List) renders a table here, so no pin is needed for this pair."
+}

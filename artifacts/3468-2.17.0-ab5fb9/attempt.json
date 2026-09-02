@@ -1,0 +1,204 @@
+{
+  "attempt_id": "3468-2.17.0-ab5fb9",
+  "plan_file": "plans/3468-2.17.0.json",
+  "issue": {
+    "repo": "jaegertracing/jaeger-ui",
+    "number": 3468,
+    "url": "https://github.com/jaegertracing/jaeger-ui/issues/3468",
+    "title": "TraceDiff slot B search populates slot A instead",
+    "fix_commit": "10f8cf1b98",
+    "fix_pr": 3473,
+    "last_release_without": "2.16.0",
+    "first_release_with": "2.17.0"
+  },
+  "app": {
+    "name": "jaeger",
+    "version": "2.17.0"
+  },
+  "started_at": "2026-09-02T18:20:35Z",
+  "env": {
+    "version": "2.17.0",
+    "snapshot": {
+      "version": "2.17.0",
+      "snapshot_name": "thrice-jaeger-2.17.0-ready",
+      "reused": true,
+      "snapshot_id": "snap_dl50q1h9wk1b"
+    },
+    "path": "fork",
+    "fork_seconds": 9.95,
+    "health_seconds": 2.49
+  },
+  "seeds": [
+    {
+      "seed_id": "sa",
+      "status": "200",
+      "ok": true
+    },
+    {
+      "seed_id": "sb",
+      "status": "200",
+      "ok": true
+    }
+  ],
+  "seed_visible": {
+    "services": [
+      "jaeger",
+      "thrice-3468"
+    ],
+    "traces": 2,
+    "spans": 5
+  },
+  "preview": {
+    "has_pt_token": true,
+    "seconds_to_200": 1.06,
+    "status_sequence": [
+      200
+    ]
+  },
+  "runs": [
+    {
+      "run_index": 0,
+      "events": [
+        {
+          "step_id": "st1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "landed_path": "/trace/...3468000000000000000000000000bbbb",
+          "outcome": "ok",
+          "t_ms": 650
+        },
+        {
+          "step_id": "st2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "5749a485f659006b",
+          "t_ms": 8095
+        },
+        {
+          "step_id": "st3",
+          "seq": 2,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "5749a485f659006b",
+          "t_ms": 3699
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "scope text 'Select a Trace...\\n\\xa0'",
+      "expected_predicate_held": false,
+      "expected_detail": "scope text 'Select a Trace...\\n\\xa0'",
+      "reproduced": false,
+      "run_seconds": 15.53,
+      "frames": 5,
+      "console_errors": [],
+      "browser_seconds": 22.9
+    },
+    {
+      "run_index": 1,
+      "events": [
+        {
+          "step_id": "st1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "landed_path": "/trace/...3468000000000000000000000000bbbb",
+          "outcome": "ok",
+          "t_ms": 654
+        },
+        {
+          "step_id": "st2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "5749a485f659006b",
+          "t_ms": 8717
+        },
+        {
+          "step_id": "st3",
+          "seq": 2,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "5749a485f659006b",
+          "t_ms": 3759
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "scope text 'Select a Trace...\\n\\xa0'",
+      "expected_predicate_held": false,
+      "expected_detail": "scope text 'Select a Trace...\\n\\xa0'",
+      "reproduced": false,
+      "run_seconds": 16.29,
+      "frames": 6,
+      "console_errors": [],
+      "browser_seconds": 22.6
+    },
+    {
+      "run_index": 2,
+      "events": [
+        {
+          "step_id": "st1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "landed_path": "/trace/...3468000000000000000000000000bbbb",
+          "outcome": "ok",
+          "t_ms": 650
+        },
+        {
+          "step_id": "st2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "5749a485f659006b",
+          "t_ms": 7841
+        },
+        {
+          "step_id": "st3",
+          "seq": 2,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "5749a485f659006b",
+          "t_ms": 3345
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "scope text 'Select a Trace...\\n\\xa0'",
+      "expected_predicate_held": false,
+      "expected_detail": "scope text 'Select a Trace...\\n\\xa0'",
+      "reproduced": false,
+      "run_seconds": 15.23,
+      "frames": 5,
+      "console_errors": [],
+      "browser_seconds": 22.1
+    }
+  ],
+  "verdict": "NOT_REPRODUCED",
+  "runs_total": 3,
+  "runs_reproduced": 0,
+  "reason": null,
+  "reaped": [
+    "ok"
+  ],
+  "sandbox_killed": true,
+  "cost": {
+    "sandbox_seconds": 76.6,
+    "browser_seconds": 180.7,
+    "usd": 0.00623,
+    "attempt_ceiling_usd": 0.1,
+    "over_attempt_ceiling": false
+  }
+}

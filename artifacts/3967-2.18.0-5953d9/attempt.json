@@ -1,0 +1,580 @@
+{
+  "attempt_id": "3967-2.18.0-5953d9",
+  "plan_file": "plans/3967-2.18.0.json",
+  "issue": {
+    "repo": "jaegertracing/jaeger-ui",
+    "number": 3967,
+    "url": "https://github.com/jaegertracing/jaeger-ui/issues/3967",
+    "title": "traces selected for comparison disappear when changing search service",
+    "fix_commit": "cd6e0ea940",
+    "fix_pr": 3968,
+    "last_release_without": "2.18.0",
+    "first_release_with": "2.19.0"
+  },
+  "app": {
+    "name": "jaeger",
+    "version": "2.18.0"
+  },
+  "started_at": "2026-09-02T18:35:27Z",
+  "env": {
+    "version": "2.18.0",
+    "snapshot": {
+      "version": "2.18.0",
+      "snapshot_name": "thrice-jaeger-2.18.0-ready",
+      "reused": true,
+      "snapshot_id": "snap_dl50rvgrafrw"
+    },
+    "path": "fork",
+    "fork_seconds": 10.41,
+    "health_seconds": 2.55
+  },
+  "seeds": [
+    {
+      "seed_id": "sa",
+      "status": "200",
+      "ok": true
+    },
+    {
+      "seed_id": "sb",
+      "status": "200",
+      "ok": true
+    }
+  ],
+  "seed_visible": {
+    "services": [
+      "jaeger",
+      "thrice-3967-a",
+      "thrice-3967-b"
+    ],
+    "traces": 1,
+    "spans": 2
+  },
+  "preview": {
+    "has_pt_token": true,
+    "seconds_to_200": 2.93,
+    "status_sequence": [
+      200
+    ]
+  },
+  "runs": [
+    {
+      "run_index": 0,
+      "events": [
+        {
+          "step_id": "a1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "landed_path": "/search",
+          "outcome": "ok",
+          "t_ms": 621
+        },
+        {
+          "step_id": "a2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 13124
+        },
+        {
+          "step_id": "a3",
+          "seq": 2,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5910
+        },
+        {
+          "step_id": "a4",
+          "seq": 3,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5038
+        },
+        {
+          "step_id": "a5",
+          "seq": 4,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5346
+        },
+        {
+          "step_id": "a6",
+          "seq": 5,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2603
+        },
+        {
+          "step_id": "a7",
+          "seq": 6,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5479
+        },
+        {
+          "step_id": "a10",
+          "seq": 7,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "7b4e240bf79ddcf3",
+          "t_ms": 11635
+        },
+        {
+          "step_id": "a11",
+          "seq": 8,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 13654
+        },
+        {
+          "step_id": "a12",
+          "seq": 9,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 8039
+        },
+        {
+          "step_id": "b2",
+          "seq": 10,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7655
+        },
+        {
+          "step_id": "b3",
+          "seq": 11,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 9265
+        },
+        {
+          "step_id": "b4",
+          "seq": 12,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2851
+        },
+        {
+          "step_id": "b5",
+          "seq": 13,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5260
+        },
+        {
+          "step_id": "b6",
+          "seq": 14,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2784
+        },
+        {
+          "step_id": "b7",
+          "seq": 15,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5775
+        },
+        {
+          "step_id": "b10",
+          "seq": 16,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2836
+        },
+        {
+          "step_id": "b11",
+          "seq": 17,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "b10ffb3ba776d220",
+          "t_ms": 3415
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "1 visible of 1 matching",
+      "expected_predicate_held": true,
+      "expected_detail": "1 visible of 1 matching",
+      "reproduced": false,
+      "run_seconds": 114.95,
+      "frames": 64,
+      "console_errors": [
+        {
+          "level": "error",
+          "text": "Failed to load resource: the server responded with a status of 400 ()"
+        }
+      ],
+      "browser_seconds": 123.9
+    },
+    {
+      "run_index": 1,
+      "events": [
+        {
+          "step_id": "a1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "landed_path": "/search",
+          "outcome": "ok",
+          "t_ms": 682
+        },
+        {
+          "step_id": "a2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 13525
+        },
+        {
+          "step_id": "a3",
+          "seq": 2,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 6178
+        },
+        {
+          "step_id": "a4",
+          "seq": 3,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 4367
+        },
+        {
+          "step_id": "a5",
+          "seq": 4,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5428
+        },
+        {
+          "step_id": "a6",
+          "seq": 5,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2616
+        },
+        {
+          "step_id": "a7",
+          "seq": 6,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5423
+        },
+        {
+          "step_id": "a10",
+          "seq": 7,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "7b4e240bf79ddcf3",
+          "t_ms": 9023
+        },
+        {
+          "step_id": "a11",
+          "seq": 8,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 16781
+        },
+        {
+          "step_id": "a12",
+          "seq": 9,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 11642
+        },
+        {
+          "step_id": "b2",
+          "seq": 10,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7964
+        },
+        {
+          "step_id": "b3",
+          "seq": 11,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5817
+        },
+        {
+          "step_id": "b4",
+          "seq": 12,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2890
+        },
+        {
+          "step_id": "b5",
+          "seq": 13,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5218
+        },
+        {
+          "step_id": "b6",
+          "seq": 14,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2777
+        },
+        {
+          "step_id": "b7",
+          "seq": 15,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 6943
+        },
+        {
+          "step_id": "b10",
+          "seq": 16,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2639
+        },
+        {
+          "step_id": "b11",
+          "seq": 17,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "b10ffb3ba776d220",
+          "t_ms": 3413
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "1 visible of 1 matching",
+      "expected_predicate_held": true,
+      "expected_detail": "1 visible of 1 matching",
+      "reproduced": false,
+      "run_seconds": 117.34,
+      "frames": 68,
+      "console_errors": [
+        {
+          "level": "error",
+          "text": "Failed to load resource: the server responded with a status of 400 ()"
+        }
+      ],
+      "browser_seconds": 125.9
+    },
+    {
+      "run_index": 2,
+      "events": [
+        {
+          "step_id": "a1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "landed_path": "/search",
+          "outcome": "ok",
+          "t_ms": 619
+        },
+        {
+          "step_id": "a2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 13071
+        },
+        {
+          "step_id": "a3",
+          "seq": 2,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5961
+        },
+        {
+          "step_id": "a4",
+          "seq": 3,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 4935
+        },
+        {
+          "step_id": "a5",
+          "seq": 4,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5283
+        },
+        {
+          "step_id": "a6",
+          "seq": 5,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2567
+        },
+        {
+          "step_id": "a7",
+          "seq": 6,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5225
+        },
+        {
+          "step_id": "a10",
+          "seq": 7,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "screenshot_sha256": "7b4e240bf79ddcf3",
+          "t_ms": 4507
+        },
+        {
+          "step_id": "a11",
+          "seq": 8,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 21239
+        },
+        {
+          "step_id": "a12",
+          "seq": 9,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 11831
+        },
+        {
+          "step_id": "b2",
+          "seq": 10,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5768
+        },
+        {
+          "step_id": "b3",
+          "seq": 11,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 7888
+        },
+        {
+          "step_id": "b4",
+          "seq": 12,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2557
+        },
+        {
+          "step_id": "b5",
+          "seq": 13,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5296
+        },
+        {
+          "step_id": "b6",
+          "seq": 14,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 2589
+        },
+        {
+          "step_id": "b7",
+          "seq": 15,
+          "action": "click",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 5702
+        },
+        {
+          "step_id": "b10",
+          "seq": 16,
+          "action": "wait_for",
+          "locator_index": 0,
+          "outcome": "ok",
+          "t_ms": 3331
+        },
+        {
+          "step_id": "b11",
+          "seq": 17,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "ok",
+          "screenshot_sha256": "b10ffb3ba776d220",
+          "t_ms": 3340
+        }
+      ],
+      "completed": true,
+      "session_id": "[redacted]",
+      "actual_predicate_held": false,
+      "actual_detail": "1 visible of 1 matching",
+      "expected_predicate_held": true,
+      "expected_detail": "1 visible of 1 matching",
+      "reproduced": false,
+      "run_seconds": 115.48,
+      "frames": 66,
+      "console_errors": [
+        {
+          "level": "error",
+          "text": "Failed to load resource: the server responded with a status of 400 ()"
+        }
+      ],
+      "browser_seconds": 124.4
+    }
+  ],
+  "verdict": "NOT_REPRODUCED",
+  "runs_total": 3,
+  "runs_reproduced": 0,
+  "reason": null,
+  "reaped": [
+    "ok"
+  ],
+  "sandbox_killed": true,
+  "cost": {
+    "sandbox_seconds": 280.5,
+    "browser_seconds": 738.7,
+    "usd": 0.02496,
+    "attempt_ceiling_usd": 0.1,
+    "over_attempt_ceiling": false
+  }
+}

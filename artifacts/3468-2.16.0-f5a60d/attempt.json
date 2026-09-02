@@ -1,0 +1,167 @@
+{
+  "attempt_id": "3468-2.16.0-f5a60d",
+  "plan_file": "plans/3468-2.16.0.json",
+  "issue": {
+    "repo": "jaegertracing/jaeger-ui",
+    "number": 3468,
+    "url": "https://github.com/jaegertracing/jaeger-ui/issues/3468",
+    "title": "TraceDiff slot B search populates slot A instead",
+    "fix_commit": "10f8cf1b98",
+    "fix_pr": 3473,
+    "last_release_without": "2.16.0",
+    "first_release_with": "2.17.0"
+  },
+  "app": {
+    "name": "jaeger",
+    "version": "2.16.0"
+  },
+  "started_at": "2026-09-02T18:19:34Z",
+  "env": {
+    "version": "2.16.0",
+    "snapshot": {
+      "version": "2.16.0",
+      "snapshot_name": "thrice-jaeger-2.16.0-ready",
+      "reused": true,
+      "snapshot_id": "snap_dl50p1pj5842"
+    },
+    "path": "fork",
+    "fork_seconds": 11.45,
+    "health_seconds": 2.55
+  },
+  "seeds": [
+    {
+      "seed_id": "sa",
+      "status": "200",
+      "ok": true
+    },
+    {
+      "seed_id": "sb",
+      "status": "200",
+      "ok": true
+    }
+  ],
+  "seed_visible": {
+    "services": [
+      "jaeger",
+      "thrice-3468"
+    ],
+    "traces": 2,
+    "spans": 5
+  },
+  "preview": {
+    "has_pt_token": true,
+    "seconds_to_200": 0.89,
+    "status_sequence": [
+      200
+    ]
+  },
+  "runs": [
+    {
+      "run_index": 0,
+      "events": [
+        {
+          "step_id": "st1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "landed_path": "/trace/...3468000000000000000000000000bbbb",
+          "outcome": "ok",
+          "t_ms": 747
+        },
+        {
+          "step_id": "st2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "locator_miss"
+        }
+      ],
+      "completed": false,
+      "session_id": "[redacted]",
+      "incomplete_reason": "locator_miss",
+      "incomplete_detail": "no locator resolved for step st2 (css=[data-testid='TraceDiffHeader--traceHeader']: TimeoutError)",
+      "run_seconds": 30.75,
+      "frames": 2,
+      "console_errors": [],
+      "browser_seconds": 37.7
+    },
+    {
+      "run_index": 1,
+      "events": [
+        {
+          "step_id": "st1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "landed_path": "/trace/...3468000000000000000000000000bbbb",
+          "outcome": "ok",
+          "t_ms": 835
+        },
+        {
+          "step_id": "st2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "locator_miss"
+        }
+      ],
+      "completed": false,
+      "session_id": "[redacted]",
+      "incomplete_reason": "locator_miss",
+      "incomplete_detail": "no locator resolved for step st2 (css=[data-testid='TraceDiffHeader--traceHeader']: TimeoutError)",
+      "run_seconds": 30.84,
+      "frames": 3,
+      "console_errors": [],
+      "browser_seconds": 37.7
+    },
+    {
+      "run_index": 2,
+      "events": [
+        {
+          "step_id": "st1",
+          "seq": 0,
+          "action": "goto",
+          "locator_index": null,
+          "landed_path": "/trace/...3468000000000000000000000000bbbb",
+          "outcome": "ok",
+          "t_ms": 854
+        },
+        {
+          "step_id": "st2",
+          "seq": 1,
+          "action": "wait_for",
+          "locator_index": null,
+          "outcome": "locator_miss"
+        }
+      ],
+      "completed": false,
+      "session_id": "[redacted]",
+      "incomplete_reason": "locator_miss",
+      "incomplete_detail": "no locator resolved for step st2 (css=[data-testid='TraceDiffHeader--traceHeader']: TimeoutError)",
+      "run_seconds": 30.86,
+      "frames": 3,
+      "console_errors": [],
+      "browser_seconds": 37.7
+    }
+  ],
+  "verdict": "INCONCLUSIVE",
+  "runs_total": 3,
+  "runs_reproduced": null,
+  "reason": "locator_miss",
+  "incomplete_runs": [
+    0,
+    1,
+    2
+  ],
+  "reaped": [
+    "ok"
+  ],
+  "sandbox_killed": true,
+  "cost": {
+    "sandbox_seconds": 45.3,
+    "browser_seconds": 113.1,
+    "usd": 0.00386,
+    "attempt_ceiling_usd": 0.1,
+    "over_attempt_ceiling": false
+  }
+}
