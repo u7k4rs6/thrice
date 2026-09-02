@@ -1,0 +1,157 @@
+<!doctype html><html lang=en><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>thrice: a reproduction harness, measured against known answers</title>
+<meta name=description content="thrice runs a reported bug's steps three times in three browsers and checks typed predicates. Measured against already-fixed jaeger-ui issues: 3 of 5 conclusive entries correct, precision 0.80, recall 0.80.">
+<style>
+:root{--bg:#fbfbfa;--fg:#17171a;--muted:#6b6b66;--line:#e4e4e0;--panel:#fff;--accent:#a3231c;--accentbg:#fdf4f3}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.w{max-width:940px;margin:0 auto;padding:22px 18px 72px}
+a{color:inherit}
+h1{font-size:15px;font-weight:700;letter-spacing:.02em;margin:0 0 14px}
+h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+color:var(--muted);margin:38px 0 12px}
+.lede{font-size:17px;line-height:1.45;margin:0 0 20px;max-width:60ch}
+.num{border-top:2px solid var(--fg);border-bottom:1px solid var(--line);padding:16px 0 14px;margin:0 0 20px}
+.big{font-size:clamp(30px,8.5vw,52px);line-height:1.05;font-weight:700;letter-spacing:-.02em;margin:0 0 8px}
+.big span{color:var(--muted);font-weight:400}
+.pr{font-size:clamp(15px,4.2vw,19px);font-weight:700;margin:0 0 6px}
+.pr span{color:var(--muted);font-weight:400}
+.against{font-size:14px;color:var(--muted);margin:0;max-width:58ch}
+video{width:100%;border:1px solid var(--line);background:#f2f2ef;display:block}
+figcaption{font-size:13px;color:var(--muted);margin-top:7px}
+.links{margin:18px 0 0;font-size:15px}
+.links a{display:inline-block;border:1px solid var(--fg);padding:7px 13px;margin:0 8px 8px 0;
+text-decoration:none;font-weight:600}
+ol.how{margin:0;padding-left:20px;font-size:15px}
+ol.how li{margin:0 0 6px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+thead th{border-top:0;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+td.issue{width:38%}
+td.issue .t{display:block;color:var(--muted);font-size:13px;line-height:1.35;margin-top:2px}
+td.v{white-space:nowrap}
+td.v .ver{display:block;font-size:12px;color:var(--muted)}
+td.r{white-space:nowrap;font-weight:600}
+tr.bad{background:var(--accentbg)}
+tr.bad td{border-top-color:#f0d9d7}
+tr.bad td.r{color:var(--accent)}
+tr.inconc td.r{color:var(--muted);font-weight:400}
+p{max-width:64ch}
+.small{font-size:14px;color:var(--muted)}
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+code{font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#f1f1ee;padding:1px 5px}
+@media(max-width:420px){.w{padding:16px 14px 56px}.lede{font-size:16px}}
+</style>
+<div class=w>
+<h1>thrice</h1>
+
+<p class=lede>A harness that answers whether a reported bug still reproduces, by running
+the reported steps three times in three browsers and checking typed predicates against
+backend state, rather than asking a model what it saw.</p>
+
+<div class=num>
+<p class=big>3 of 5 <span>conclusive entries correct</span></p>
+<p class=pr>precision 0.80 &nbsp; recall 0.80</p>
+<p class=against>Measured against already-fixed jaeger-ui issues, where ground truth comes
+from the commit that closed each one. Six entries attempted: 3 correct, 2 incorrect,
+1 inconclusive.</p>
+</div>
+
+<figure style="margin:0">
+<video controls muted playsinline preload=metadata poster="" src="media/three-browsers-4075.mp4"></video>
+<figcaption>Three Solari browsers running the same plan concurrently against jaeger 2.19.0,
+issue #4075. Real screencast frames from the recorded run, played back at 4 fps.</figcaption>
+</figure>
+
+<p class=links>
+<a href="https://github.com/u7k4rs6/thrice">Repository</a>
+<a href="#attempts">All twelve attempts</a>
+</p>
+
+<h2>How it works</h2>
+<ol class=how>
+<li>Fork a Solari sandbox from a snapshot of the app at a pinned release, in about ten seconds.</li>
+<li>Seed backend state over OTLP/HTTP, then verify it is queryable before running anything.</li>
+<li>Run the reported steps in three independent browsers over CDP, concurrently.</li>
+<li>Check two typed predicates per run. A run counts as reproduced only if the actual
+predicate holds and the expected predicate fails. No model is in the run loop.</li>
+</ol>
+
+<h2 id=attempts>The twelve attempts</h2>
+<div class=scroll><table>
+<thead><tr><th>Issue</th><th>Buggy release</th><th>Fixed release</th><th>Result</th></tr></thead>
+<tbody><tr class="ok">
+<td class="issue"><a href="https://github.com/jaegertracing/jaeger-ui/issues/4075">#4075</a>
+<span class="t">Back-to-search arrow missing when opening a trace via its trace ID</span></td>
+<td class="v"><span class="ver">2.19.0</span> <a href="artifacts/4075-2.19.0-0302e4/report.html">reproduced 3/3</a></td>
+<td class="v"><span class="ver">2.20.0</span> <a href="artifacts/4075-2.20.0-1b6426/report.html">not reproduced 0/3</a></td>
+<td class="r">correct</td></tr><tr class="ok">
+<td class="issue"><a href="https://github.com/jaegertracing/jaeger-ui/issues/3571">#3571</a>
+<span class="t">Expanded span breaks the hierarchy column in the detail row</span></td>
+<td class="v"><span class="ver">2.16.0</span> <a href="artifacts/3571-2.16.0-214ab5/report.html">reproduced 3/3</a></td>
+<td class="v"><span class="ver">2.17.0</span> <a href="artifacts/3571-2.17.0-dc1f67/report.html">not reproduced 0/3</a></td>
+<td class="r">correct</td></tr><tr class="ok">
+<td class="issue"><a href="https://github.com/jaegertracing/jaeger-ui/issues/3804">#3804</a>
+<span class="t">Child expander cannot be reached or activated by keyboard</span></td>
+<td class="v"><span class="ver">2.17.0</span> <a href="artifacts/3804-2.17.0-8681da/report.html">reproduced 3/3</a></td>
+<td class="v"><span class="ver">2.18.0</span> <a href="artifacts/3804-2.18.0-d54107/report.html">not reproduced 0/3</a></td>
+<td class="r">correct</td></tr><tr class="bad">
+<td class="issue"><a href="https://github.com/jaegertracing/jaeger-ui/issues/4045">#4045</a>
+<span class="t">Span detail side panel is not resizable when the timeline is hidden</span></td>
+<td class="v"><span class="ver">2.19.0</span> <a href="artifacts/4045-2.19.0-39eaa6/report.html">reproduced 3/3</a></td>
+<td class="v"><span class="ver">2.20.0</span> <a href="artifacts/4045-2.20.0-e9edc0/report.html">reproduced 3/3</a></td>
+<td class="r">incorrect</td></tr><tr class="bad">
+<td class="issue"><a href="https://github.com/jaegertracing/jaeger-ui/issues/3967">#3967</a>
+<span class="t">Traces selected for comparison disappear when the search service changes</span></td>
+<td class="v"><span class="ver">2.18.0</span> <a href="artifacts/3967-2.18.0-5953d9/report.html">not reproduced 0/3</a></td>
+<td class="v"><span class="ver">2.19.0</span> <a href="artifacts/3967-2.19.0-e3dfe9/report.html">not reproduced 0/3</a></td>
+<td class="r">incorrect</td></tr><tr class="inconc">
+<td class="issue"><a href="https://github.com/jaegertracing/jaeger-ui/issues/3468">#3468</a>
+<span class="t">TraceDiff slot B search populates slot A instead</span></td>
+<td class="v"><span class="ver">2.16.0</span> <a href="artifacts/3468-2.16.0-f5a60d/report.html">inconclusive</a></td>
+<td class="v"><span class="ver">2.17.0</span> <a href="artifacts/3468-2.17.0-ab5fb9/report.html">not reproduced 0/3</a></td>
+<td class="r">inconclusive</td></tr></tbody>
+</table></div>
+<p class=small>Each verdict links to that attempt's report page: the plan, three run columns
+with per-step timings, screenshots at assertion steps, and the screencast.</p>
+
+<h2>What it got wrong</h2>
+<p><a href="https://github.com/jaegertracing/jaeger-ui/issues/4045">#4045</a> False positive. The plan reaches the state in the issue, but the resizer read absent on both releases, so the internal side-panel flag is probably not satisfied by that state.</p><p><a href="https://github.com/jaegertracing/jaeger-ui/issues/3967">#3967</a> False negative. The bug did not manifest under the plan&#x27;s steps. The two releases have materially different search UIs: the List/Table toggle does not exist in the older one.</p><p><a href="https://github.com/jaegertracing/jaeger-ui/issues/3468">#3468</a> Inconclusive. The compare route renders identically on both releases, so the URL-driven approach never reaches the state the bug needs.</p>
+<p class=small>These are kept in the count. Removing an entry after seeing its result is the
+one thing that would make the number meaningless.</p>
+
+<h2>What did not work</h2>
+<p>Running three times instead of once is the core of the design. On this corpus it bought
+nothing: <strong>63 runs across 21 attempts produced zero divergence and zero FLAKY
+verdicts.</strong> Every attempt that completed did so unanimously.</p>
+<p>That is not evidence the mechanism is worthless. The corpus was selected for entries
+reproducible from a small deterministic seed, which is close to selecting for non-flaky
+behaviour, and the excluded candidates include the timing-sensitive cases where flakiness
+would live. But the design was validated on a corpus chosen to make it redundant, and the
+divergence differ is left specified and unbuilt because there is nothing here for it to align.</p>
+
+<h2>What bounded the corpus</h2>
+<p>Of 44 candidate issues, 36 were excluded, and <strong>22 of those failed on release-pair
+availability alone</strong>: the issue was fine, but the versions needed to check it against
+do not exist as buildable releases. Jaeger 2.x is published only for 2.14.0 through 2.20.0.
+That bounds any tool built this way, not just this one.</p>
+
+<h2>Built on Solari</h2>
+<p>Sandboxes run Jaeger 2.x all-in-one with no external backend. <code>snapshot</code> and
+<code>create(from_snapshot=...)</code> make an attempt cost seconds instead of a full build.
+<code>preview_url</code> exposes the UI so a cloud browser can reach it. Browsers are driven
+over raw CDP with unmodified Playwright, and <code>Page.startScreencast</code> produces the
+video above. Ten findings from the build, including several about the platform, are in
+<a href="https://github.com/u7k4rs6/thrice/blob/main/docs/findings.md">findings.md</a>.</p>
+
+<footer>
+Seven days, one developer. Nothing was posted to any issue tracker; every issue in the
+corpus was already fixed by its maintainers before thrice ran.
+<a href="https://github.com/u7k4rs6/thrice">github.com/u7k4rs6/thrice</a>
+</footer>
+</div>
+</html>
