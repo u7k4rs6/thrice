@@ -73,12 +73,76 @@
       "id": "st1",
       "action": "goto",
       "args": {
-        "path": "/search?service=thrice-4075&lookback=1h&limit=20"
+        "path": "/search"
       },
       "timeout_ms": 30000
     },
     {
       "id": "st2",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-testid=service]"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st3",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-testid=service]"
+        }
+      ],
+      "timeout_ms": 15000
+    },
+    {
+      "id": "st4",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ant-select-item-option[title='thrice-4075']"
+        },
+        {
+          "by": "role",
+          "value": "option",
+          "name_re": "^thrice-4075$"
+        },
+        {
+          "by": "text",
+          "value": "thrice-4075"
+        }
+      ],
+      "timeout_ms": 15000
+    },
+    {
+      "id": "st5",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-test=submit-btn]:not([disabled])"
+        }
+      ],
+      "timeout_ms": 15000
+    },
+    {
+      "id": "st6",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[data-test=submit-btn]"
+        }
+      ],
+      "timeout_ms": 15000
+    },
+    {
+      "id": "st7",
       "action": "wait_for",
       "locators": [
         {
@@ -89,7 +153,7 @@
       "timeout_ms": 30000
     },
     {
-      "id": "st3",
+      "id": "st8",
       "action": "wait_for",
       "locators": [
         {
@@ -100,7 +164,7 @@
       "timeout_ms": 15000
     },
     {
-      "id": "st4",
+      "id": "st9",
       "action": "click",
       "locators": [
         {
@@ -116,17 +180,17 @@
       "timeout_ms": 15000
     },
     {
-      "id": "st5",
+      "id": "st10",
       "action": "wait_for",
       "args": {
         "ms": 2500
       },
-      "timeout_ms": 5000
+      "timeout_ms": 6000
     }
   ],
   "assertion_step_ids": [
-    "st2",
-    "st5"
+    "st7",
+    "st10"
   ],
   "actual_predicate": {
     "type": "element_visible",
@@ -148,5 +212,5 @@
     },
     "summary": "clicking the trace ID copied it and left the search page in place"
   },
-  "notes": "Predicate pair corrected on day 3 against the fix diff, and it differs from the day-2 sketch in docs/corpus-candidates.md. The sketch assumed the fix makes the back arrow appear, so it proposed element_absent/element_visible on .TracePageHeader--back. Reading the diff shows the maintainers fixed it differently: ClickToCopy.whenClicked gained e.preventDefault(), so on 2.20.0 clicking the trace ID copies and does NOT navigate at all. The back arrow is absent on BOTH releases after this click (on 2.20.0 because you never leave search), so the sketched pair would return REPRODUCED on both and score the entry incorrect for a reason that has nothing to do with thrice. The defect is really 'clicking the trace ID navigates, losing router state and with it the back arrow'. On 2.19.0 stopPropagation blocks react-router's handler but the native anchor default still fires, so the browser does a full page load and location.state.fromSearch is lost; TracePageHeader renders the back Link only when toSearch is truthy, which is location.state.fromSearch. So 'navigation happened' is the observable that separates the releases."
+  "notes": "Steps rewritten on day 4 to unblock Q26. jaeger-ui does not run a search from ?service= in the URL: the param is applied before the async services list resolves, so the Select stays empty and Find Traces stays disabled. The plan now drives the form: open the antd Select (data-testid=service), pick the option, wait for the submit button to enable, and click it. Both locators are identical at 061fa3db (2.19.0) and 05b8aedb (2.20.0), checked in SearchForm.tsx, so the steps cannot silently mean different things on the two sides of the pair. Predicates are the day-3 navigation-keyed pair, derived from the fix diff rather than the issue text: ClickToCopy.whenClicked gained e.preventDefault(), so on 2.20.0 the trace-ID click copies without navigating, while on 2.19.0 the native anchor default still fires and loses router state, taking the back arrow with it."
 }

@@ -189,7 +189,9 @@ Second, three of the seven come from the same v2.19.0 to v2.20.0 pair. If that p
 - **Q23** What is the exact focus-highlight class on a span row, for #4131's predicates?
 - **Q24** Does the v2.15.0 / v2.15.1 shared UI commit mean any other release pair also shares a pointer? Checked for these nine and it does not, but worth re-checking if the window ever widens.
 - **Q25** What makes a sandbox "Not snapshottable"? `snapshot()` returned 409 on four consecutive attempts on day 3, including on a trivial freshly created sandbox with zero other sandboxes live and only two snapshots stored, then succeeded normally twenty minutes later. Ruled out: concurrent-sandbox state and a snapshot quota. Same 409 family as day 1's `Not revertable`. Treated as transient, and the environment manager now falls back to building in place.
-- **Q26** How does a plan make jaeger-ui actually run a search? `/search?service=<svc>&lookback=1h&limit=20` applies lookback and limit but leaves the service unselected and "Find Traces" disabled, so no search executes. Likely the services list loads asynchronously and the query param is applied before the option exists. Blocks #4075 and every other entry whose steps start from search results, which is most of them.
+- **Q27** How should a plan pin the search result view mode? 2.19.0 defaults to List and 2.20.0 to Table, and `.ResultItemTitle` exists only in List. Either add an explicit step clicking the List toggle, or use locators valid in both views. Affects five of the seven entries.
+- **Q28** Why is the antd option click flaky? The frame shows the option visible when the click timed out, and the identical step passed 3/3 on the other release. Suspect a race between the dropdown's open animation and the click.
+- **Q26** *Resolved on day 4.* How does a plan make jaeger-ui actually run a search? `/search?service=<svc>&lookback=1h&limit=20` applies lookback and limit but leaves the service unselected and "Find Traces" disabled, so no search executes. Likely the services list loads asynchronously and the query param is applied before the option exists. Blocks #4075 and every other entry whose steps start from search results, which is most of them.
 
 ---
 
@@ -241,3 +243,57 @@ behaviour from the issue rather than from the fix. Where a maintainer fixes a
 bug differently from how the reporter framed it, a predicate pair derived from
 the issue will be wrong. Every remaining entry needs its expected predicate
 derived from the fix diff, not from the issue's "Expected behavior" section.
+
+---
+
+## Day 4 addendum: #4075 half-lands, and a new class of corpus hazard
+
+**Result: REPRODUCED 3/3 on 2.19.0, INCONCLUSIVE on 2.20.0.** The entry is not
+landed. Stopped rather than tuned, per the day-4 brief.
+
+Q26 is resolved. jaeger-ui does not run a search from `?service=` in the URL,
+so the plan now drives the form: click the Select at `[data-testid=service]`,
+pick the option, wait for `[data-test=submit-btn]` to enable, click it. Both
+locators are byte-identical in `SearchForm.tsx` at 061fa3db (2.19.0) and
+05b8aedb (2.20.0), so the steps cannot silently mean different things across
+the pair.
+
+On 2.19.0 that works perfectly: all ten steps `ok` in all three runs, actual
+predicate held, expected predicate failed, REPRODUCED 3/3.
+
+On 2.20.0 it does not, for two separate reasons, and only the second matters.
+
+**Reason 1, my locator is flaky (runs 0 and 1).** Step st4 timed out clicking
+the service option. The captured frame shows the dropdown open with
+`thrice-4075` plainly visible, so the option was there and the locator did not
+match it in time. This is a defect in the plan, not in the app, and the proof
+is that the identical step passed 3/3 on 2.19.0.
+
+**Reason 2, and the real finding: the two releases default to different search
+result views.** Run 2 got past the form, and its search succeeded: "1 trace (in
+44.4ms)". But 2.20.0 renders results in **Table** view by default, and
+`.ResultItemTitle` is a **List** view element that does not exist in the table.
+2.19.0 defaults to **List**. Both frames are in `artifacts/`.
+
+### Why this is a corpus hazard rather than a bug
+
+A corpus entry assumes one plan is valid on both sides of a release pair. That
+assumption just failed, and it failed silently: the search worked, the trace was
+found, and the step list still could not proceed. Had the predicates happened to
+evaluate anyway, the entry would have scored incorrect for a reason with nothing
+to do with #4075.
+
+Neither day-2 triage nor day-3 diff reading would have caught it. The default
+view mode changed between releases without touching any file in #4075's fix
+diff. The only thing that surfaces it is running both sides.
+
+**Consequence for the remaining entries.** Five of the six others start from
+search results, so every one of them is exposed. A plan that reaches the result
+list must either pin the view mode as an explicit step or use locators valid in
+both views. That is a step-authoring rule, and it is now known before the plans
+are written rather than after. Recorded as Q27.
+
+> *Defect record, day 4.* The day-3 addendum said the corrected predicate pair
+> left the entry "not yet proven". It is now proven on one side only. The
+> predicates themselves are sound: on 2.19.0 `actual` held and `expected`
+> failed in all three runs, exactly as derived from the fix diff.
