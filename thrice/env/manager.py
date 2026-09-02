@@ -54,9 +54,12 @@ async def _sh(sbx: Any, script: str, timeout_ms: int = 300_000) -> Any:
 
 
 class EnvManager:
-    def __init__(self, client: Any, guard: Any) -> None:
+    def __init__(self, client: Any, guard: Any, ledger: Any = None) -> None:
         self.sc = client
         self.guard = guard
+        #: On-disk ledger. Survives the process, which the in-memory list below
+        #: does not; see thrice/env/ledger.py for why that matters.
+        self.ledger = ledger
         #: Every sandbox this manager created, so a failure between create and
         #: hand-off cannot leak one. A leaked sandbox bills until its plan
         #: deadline, and on day 3 one leaked for about ten minutes because
@@ -70,6 +73,8 @@ class EnvManager:
         for sbx in self._created:
             try:
                 await sbx.kill()
+                if self.ledger:
+                    self.ledger.closed(sbx.id)
                 killed.append("ok")
             except Exception as exc:
                 killed.append(f"{type(exc).__name__}")
@@ -144,11 +149,22 @@ class EnvManager:
         return sbx, out
 
     async def _create_with_retry(self, **kw: Any) -> Any:
-        """Retry capacity failures. 503/NoCapacity is documented retryable; 429 never is."""
+        """Retry capacity failures. 503/NoCapacity is documented retryable; 429 never is.
+
+        The ledger records intent BEFORE the call and the id immediately after,
+        so a create that succeeds server-side but fails client-side still
+        leaves a trail for the sweep.
+        """
+        attempt_id = (kw.get("metadata") or {}).get("thrice_attempt", "unknown")
         last: Exception | None = None
         for attempt in range(4):
+            token = self.ledger.intent(attempt_id, note=str(kw.get("from_snapshot") or "fresh")) \
+                if self.ledger else None
             try:
-                return await self.sc.create(**kw)
+                sbx = await self.sc.create(**kw)
+                if self.ledger:
+                    self.ledger.opened(sbx.id, attempt_id, token)
+                return sbx
             except Exception as exc:
                 status = getattr(exc, "status", None)
                 name = type(exc).__name__

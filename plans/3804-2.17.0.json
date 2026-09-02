@@ -1,0 +1,136 @@
+{
+  "plan_version": 1,
+  "issue": {
+    "repo": "jaegertracing/jaeger-ui",
+    "number": 3804,
+    "url": "https://github.com/jaegertracing/jaeger-ui/issues/3804",
+    "title": "Span name and child expander in Trace Timeline cannot be activated via keyboard",
+    "fix_commit": "16d58c3745",
+    "fix_pr": 3807,
+    "last_release_without": "2.17.0",
+    "first_release_with": "2.18.0"
+  },
+  "app": {
+    "name": "jaeger",
+    "version": "2.17.0",
+    "ui_port": 16686,
+    "otlp_port": 4318,
+    "read_only_ui": true
+  },
+  "seeds": [
+    {
+      "id": "s1",
+      "endpoint": "/v1/traces",
+      "expected_response": {
+        "status": 200
+      },
+      "payload": {
+        "resourceSpans": [
+          {
+            "resource": {
+              "attributes": [
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "thrice-3804"
+                  }
+                }
+              ]
+            },
+            "scopeSpans": [
+              {
+                "scope": {
+                  "name": "thrice"
+                },
+                "spans": [
+                  {
+                    "traceId": "3804000000000000000000000000abcd",
+                    "spanId": "3804000000000000",
+                    "name": "thrice-root",
+                    "kind": 2,
+                    "startOffsetMs": 5000,
+                    "endOffsetMs": 1000
+                  },
+                  {
+                    "traceId": "3804000000000000000000000000abcd",
+                    "spanId": "3804000000000001",
+                    "name": "thrice-child",
+                    "kind": 3,
+                    "startOffsetMs": 4600,
+                    "endOffsetMs": 1200,
+                    "parentSpanId": "3804000000000000"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "steps": [
+    {
+      "id": "st1",
+      "action": "goto",
+      "args": {
+        "path": "/trace/3804000000000000000000000000abcd"
+      },
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st2",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".span-name"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st3",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".SpanTreeOffset[role='switch']"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st4",
+      "action": "wait_for",
+      "args": {
+        "ms": 1000
+      },
+      "timeout_ms": 5000
+    }
+  ],
+  "assertion_step_ids": [
+    "st2",
+    "st4"
+  ],
+  "actual_predicate": {
+    "type": "element_absent",
+    "args": {
+      "locator": {
+        "by": "css",
+        "value": ".SpanTreeOffset[role='switch'][tabindex='0']"
+      }
+    },
+    "summary": "the child expander is not keyboard focusable"
+  },
+  "expected_predicate": {
+    "type": "element_visible",
+    "args": {
+      "locator": {
+        "by": "css",
+        "value": ".SpanTreeOffset[role='switch'][tabindex='0']"
+      }
+    },
+    "summary": "the child expander is keyboard focusable"
+  },
+  "notes": "Diff-derived. The fix at 16d58c3745 changes SpanTreeOffset's wrapperProps from {onClick, role:'switch', 'aria-checked'} to additionally carry onKeyDown, tabIndex:0 and aria-label='Expand or collapse child spans'. Both sides were read directly: at 2.17.0 the wrapper is a one-line object with no tabIndex, at 2.18.0 it is the expanded form. So the pair keys on an attribute that provably exists on one side and not the other, with no rendering judgement involved. The locator is scoped to .SpanTreeOffset because SpanBarRow also renders a role='switch' element on the same page and an unscoped [role=switch] would be ambiguous. No interaction is needed: the expander renders as soon as a parent span is in the timeline, so the seed is two spans and the plan only navigates and waits. No search page, so hazard H3 does not apply."
+}

@@ -16,6 +16,7 @@ import uuid
 from typing import Any
 
 from .budget.guard import BudgetExceeded, BudgetGuard
+from .env.ledger import LeakDetected, SandboxLedger
 from .env.manager import EnvError, EnvManager, redact
 from .env.seed import stamp_now
 from .plan.validate import load
@@ -38,7 +39,7 @@ def api_key() -> str:
     return raw
 
 
-async def attempt(plan_path: str, guard: BudgetGuard) -> dict[str, Any]:
+async def attempt(plan_path: str, guard: BudgetGuard, ledger: SandboxLedger) -> dict[str, Any]:
     from solari_browser import Solari
     from solari_sandbox import SandboxClient
 
@@ -57,7 +58,7 @@ async def attempt(plan_path: str, guard: BudgetGuard) -> dict[str, Any]:
 
     guard.reserve_attempt()
     sc = SandboxClient(api_key=api_key(), base_url=BASE_URL)
-    env = EnvManager(sc, guard)
+    env = EnvManager(sc, guard, ledger=ledger)
     solari = Solari(api_key=api_key())
     sbx = None
     t_sbx = None
@@ -121,9 +122,21 @@ async def main() -> int:
     args = ap.parse_args()
 
     guard = BudgetGuard()
+    ledger = SandboxLedger(api_key=api_key())
+    ledger.install()
+
+    # Reap anything a previous run abandoned before starting a new one. Day 4
+    # left a sandbox billing for minutes because a shell timeout killed the
+    # process; this is what makes that self-healing rather than manual.
+    stale = ledger.open_ids()
+    if stale:
+        print(f"ledger: {len(stale)} sandbox(es) open from a previous run, sweeping")
+        for r in ledger.sweep_sync("startup"):
+            print("   ", json.dumps(r))
+
     results = []
     for p in args.plans:
-        r = await attempt(p, guard)
+        r = await attempt(p, guard, ledger)
         results.append(r)
         print(redact(json.dumps({
             k: v for k, v in r.items()
@@ -138,6 +151,17 @@ async def main() -> int:
                   f"reproduced={run.get('reproduced')} "
                   f"frames={run.get('frames')} "
                   f"{run.get('incomplete_reason','')} {run.get('incomplete_detail','')}")
+    # Independent check against the API, not against the local ledger.
+    from solari_sandbox import SandboxClient as _SC
+    _sc = _SC(api_key=api_key(), base_url=BASE_URL)
+    try:
+        live = await ledger.assert_zero_live(_sc)
+        print(f"\nledger: zero live sandboxes confirmed against the API {live}")
+    except LeakDetected as exc:
+        print(f"\nLEAK DETECTED: {exc}")
+    finally:
+        await _sc.aclose()
+
     print("\n=== summary ===")
     for r in results:
         print(f"  {r['app']['version']:8} {r.get('verdict'):16} "

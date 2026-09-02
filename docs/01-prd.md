@@ -82,16 +82,18 @@ Precision is TP / (TP + FP): when thrice says a bug reproduces, how often is the
 
 | Criterion | Target | Justification |
 |---|---|---|
-| Corpus entries built and run | **7** (floor 5, no stretch) | Bounded by the release window, not by plan-authoring time and not by predicate expressiveness. See below. |
-| Attempts executed | 14 (two per entry) | One per version per entry. |
+| Corpus entries built and run | **6** (floor 5, no stretch) | Bounded by the release window, not by plan-authoring time and not by predicate expressiveness. See below. |
+| Attempts executed | 12 (two per entry) | One per version per entry. |
 | Corpus correctness reported with precision and recall | Yes, whatever the number is | The result is the deliverable. A low number is a finding. |
 | INCONCLUSIVE rate reported separately | Yes | Never folded into correctness. |
 | Recording published | 1, 30 to 45 seconds | The reviewer's primary artifact. |
-| Repo public with report pages for every attempt | Yes | 14 report pages are the evidence. |
+| Repo public with report pages for every attempt | Yes | 12 report pages are the evidence. |
 | Cookbook fork with `examples/thrice-jaeger` | Yes | Satisfies the literal fork requirement. |
 | Credits spent for the week | Under $3.00 of $20.00 | Section 8. |
 
-**Why 7 entries, and why there is no stretch figure.** Day-2 triage (`docs/corpus-candidates.md`) surveyed all 146 jaeger-ui issues closed in the window, took the 44 labelled `bug` and completed, and found exactly **7 that qualify**. The ceiling is not plan-authoring time and it is not predicate expressiveness. **It is the 2.14.0 to 2.20.0 release window** that gate G7 established: an entry needs both a buggy and a fixed release inside it, and most candidates do not have one.
+**Why 6 entries, and why there is no stretch figure.** Day-2 triage (`docs/corpus-candidates.md`) surveyed all 146 jaeger-ui issues closed in the window, took the 44 labelled `bug` and completed, and found 7 that qualified. Day 5 excluded #4131 on closer reading of its observable, leaving **6**.
+
+> *Defect record, day 5.* Was 7. #4131's only observable is scroll position in a virtualized list, which needs a 40-span trace to detect, failing C1 and C3. The count moved down rather than up, which is what section 7 predicted it would do. The ceiling is not plan-authoring time and it is not predicate expressiveness. **It is the 2.14.0 to 2.20.0 release window** that gate G7 established: an entry needs both a buggy and a fixed release inside it, and most candidates do not have one.
 
 A stretch figure would be dishonest here. There is no eighth entry to reach for: the pool is exhausted, and getting to 8 would mean promoting a MARGINAL candidate, which is exactly what the floor of 5 exists to prevent. If the number moves it will move down, when an entry turns out not to reproduce as triaged, not up.
 

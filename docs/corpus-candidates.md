@@ -25,6 +25,50 @@ Scope set by G7 in `spikes/GATES.md`: the Jaeger 2.x release series on GitHub is
 3. For each issue, took the closing commit from the issue timeline (or the merge commit of a linked merged PR), then computed the first containing release with `git merge-base --is-ancestor <fix> <submodule pointer>` against a blobless clone of jaeger-ui. This is an exact ancestry test, not a date heuristic.
 4. Read every issue body and, for the survivors, the actual fix diff, because several issues that read as CSS regressions turn out to change the DOM. That distinction decides criterion 4 and it cannot be made from the issue text.
 
+## Corpus hazard classes
+
+Three distinct ways a candidate can fail, discovered in this order. Only the
+first is visible at triage time, which is the point.
+
+**H1, visible at triage.** The issue does not meet the criteria below: no
+adjacent release pair, no identifiable fix commit, pure CSS, needs an external
+backend. Found by reading issue metadata. 36 of 44 candidates.
+
+**H2, visible only in the fix diff.** The maintainer fixed the bug differently
+from how the reporter framed it, so a predicate pair derived from the issue's
+"Expected behavior" section is wrong. #4075 is the worked example: the issue
+asked for the back arrow to appear, the fix instead added `preventDefault()` so
+the click no longer navigates at all. A pair derived from the issue text would
+have held on both releases and scored the entry incorrect. Found by reading the
+diff. Every entry's expected predicate must be diff-derived, never issue-derived.
+
+**H3, visible only on a both-sides run.** *Added day 5.* **Two releases can
+diverge in ways that appear nowhere in the fix diff and break a plan's steps
+without touching its predicates.** The worked example: jaeger-ui 2.19.0 defaults
+its search results to **List** view and 2.20.0 defaults to **Table** view.
+`.ResultItemTitle` exists only in List, so a step list that reaches the result
+row succeeds on one side of the pair and fails on the other, with nothing in
+#4075's fix diff mentioning view modes.
+
+H3 is the important one for the writeup because **no amount of static analysis
+finds it**. Triage reads issue metadata and sees nothing. Diff reading reads the
+fix and sees nothing, because the divergence is in code the fix never touched.
+It surfaces only when both sides are actually run, and even then it can hide: on
+2.20.0 the search *succeeded* and found the seeded trace, so every signal short
+of the step failure said the run was healthy. Had the predicates happened to
+evaluate anyway, the entry would have scored incorrect for a reason with nothing
+to do with the bug under test.
+
+The mitigation is a step-authoring rule rather than a code change: a plan that
+depends on any view-mode-sensitive DOM must pin the mode explicitly as a step,
+or use locators valid in every mode. Pinning is preferred, because it keeps one
+plan valid on both sides rather than branching per version, and a per-version
+branch would mean the two attempts are no longer running the same test.
+
+This also sets a floor on what an entry costs to validate: **an entry is not
+proven until both sides have run.** Static derivation gets a plan to plausible,
+not to correct.
+
 ## Criteria
 
 - **C1** reproducible from a seed of at most a few spans
@@ -47,7 +91,7 @@ Nine candidates are dark-mode or contrast regressions. A `screenshot_region_dige
 | #3967 | traces selected for comparison disappear when changing sea | `cd6e0ea940` | #3968 | v2.18.0 | v2.19.0 | yes | **QUALIFIES** | - |
 | #4045 | Span Detail sidepanel is not resizable when timeline is hi | `bdb1990aa6` | #4046 | v2.19.0 | v2.20.0 | yes | **QUALIFIES** | - |
 | #4075 | Back-to-search arrow missing when opening trace via trace  | `68bfe1b58d` | #4080 | v2.19.0 | v2.20.0 | yes | **QUALIFIES** | - |
-| #4131 | Keyboard "Previous Span" navigation skips the root span an | `782de5ffc5` | #4145 | v2.19.0 | v2.20.0 | yes | **QUALIFIES** | - |
+| #4131 | Keyboard "Previous Span" navigation skips the root span an | `782de5ffc5` | #4145 | v2.19.0 | v2.20.0 | no | **EXCLUDED** | C1 and C3, added day 5: the only observable is scroll position, and the timeline is virtualized, so detecting it needs a trace long enough (about 40+ spans) for the root row to unmount. Not a small seed, and it becomes a large-trace bug. See the day-5 note below. |
 | #2221 | Update Tooltip Arrow Configuration in Ant Design Component | `d88069dc40` | #3663 | v2.16.0 | v2.17.0 | unclear | **MARGINAL** | C2: no user-visible behaviour; at best an antd deprecation console.warn, which console_error does not match |
 | #3891 | Strict OTLP schemas (Span/ResourceSpans/InstrumentationSco | `f879b46c43` | #3964 | v2.18.0 | v2.19.0 | unclear | **MARGINAL** | C1/C2: UI-observability unproven; the closing commit is a feature change (/api/v3/trace-summaries), not a targeted schema fix, so the fixed-side behaviour may differ for an unrelated reason |
 | #2201 | Archive button is enabled by default | `none` | - | - | - | n/a | **EXCLUDED** | C5: no identifiable fix commit (referenced PR closed unmerged), so ground truth is unavailable |
@@ -90,10 +134,13 @@ Nine candidates are dark-mode or contrast regressions. A `screenshot_region_dige
 
 | Class | Count |
 |---|---|
-| **QUALIFIES** | **7** |
+| **QUALIFIES** | **6** |
 | MARGINAL | 2 |
-| EXCLUDED | 35 |
+| EXCLUDED | 36 |
 | **Total bug-labelled, completed, closed in window** | **44** |
+
+> *Defect record, day 5.* Was 7 QUALIFIES and 35 EXCLUDED. #4131 moved to
+> EXCLUDED once its observable was worked out properly: see the note below.
 
 Exclusions by criterion:
 
@@ -105,8 +152,9 @@ Exclusions by criterion:
 | C4, pure CSS or contrast | 10 | Nine dark-mode/contrast plus one overlap-on-resize |
 | C2, nothing user-observable | 2 | One refactor, one test-only defect |
 | C1, needs an external backend | 1 | SPM requires Prometheus |
+| C1 and C3, needs a large trace | 1 | #4131, added day 5 |
 
-The single largest cause of exclusion is not the predicate criteria at all: **22 of 35 exclusions are C5**, meaning the issue is fine but the release pair is not available. That is a consequence of the seven-month window G7 established, and it is worth stating plainly because it means the corpus is bounded by release availability rather than by thrice's expressiveness.
+The single largest cause of exclusion is not the predicate criteria at all: **22 of 36 exclusions are C5**, meaning the issue is fine but the release pair is not available. That is a consequence of the seven-month window G7 established, and it is worth stating plainly because it means the corpus is bounded by release availability rather than by thrice's expressiveness.
 
 ## QUALIFIES entries: seed and predicate sketches
 
@@ -153,12 +201,30 @@ Predicate pairs follow D4: the run counts as reproduced only if the **actual** p
 - **expected**: `element_visible` on the back-to-search control.
 - The fix is `{ replace: true, state: location.state }` in `update-ui-find.ts`: the arrow's presence is driven by preserved router state, so this is a clean presence/absence pair. The strongest entry in the set.
 
-### 7. #4131 Previous-span navigation skips the root span (v2.19.0 to v2.20.0)
-- **Seed**: four spans in a chain, root span name carrying a unique token such as `rootmatch`.
-- **Steps**: goto the trace, fill the find input with the token, press the previous-span shortcut.
-- **actual**: `element_visible` on the focus-highlight class scoped to the **last** span row.
-- **expected**: `element_visible` on the focus-highlight class scoped to the **root** span row.
-- Root cause is `!nextSpanIndex` treating a valid index 0 as not-found; the fix changes it to `nextSpanIndex === undefined`. The observable is which row carries the highlight, so the exact class name needs pinning during plan authoring.
+### ~~7. #4131 Previous-span navigation skips the root span~~ (EXCLUDED day 5)
+
+The fix is real and narrow: `!nextSpanIndex` becomes `nextSpanIndex === undefined`,
+so a valid index 0 stops being treated as not-found. It matches what the issue
+describes. The problem is the observable, not the fix.
+
+The bug manifests only as scroll position. There is no class, attribute or node
+that differs, so `attribute_equals` on a focus class (the day-2 sketch) has
+nothing to bind to. jaeger-ui's timeline is virtualized, so the only way to
+detect "scrolled to the bottom instead of the top" is that the root span row is
+unmounted, which requires a trace tall enough that both ends cannot be on screen
+at once: roughly 40 or more spans at an 800px viewport.
+
+That fails **C1** (a seed of at most a few spans) and turns the entry into a
+large-trace scroll bug, which fails **C3**. Excluded rather than salvaged, per
+the standing rule that a stretched entry is worth less than a smaller honest
+corpus.
+
+> *Defect record, day 5.* The superseded sketch: "**Seed**: four spans in a
+> chain, root span name carrying a unique token such as `rootmatch` ...
+> **actual**: `element_visible` on the focus-highlight class scoped to the
+> **last** span row. **expected**: ... scoped to the **root** span row ... the
+> exact class name needs pinning during plan authoring." There is no such
+> class; the day-2 sketch assumed one existed without checking.
 
 ## Practical consequences
 
@@ -169,7 +235,7 @@ Predicate pairs follow D4: the run counts as reproduced only if the **actual** p
 | v2.16.0 to v2.17.0 | #3468, #3571 |
 | v2.17.0 to v2.18.0 | #3804 |
 | v2.18.0 to v2.19.0 | #3967 |
-| v2.19.0 to v2.20.0 | #4045, #4075, #4131 |
+| v2.19.0 to v2.20.0 | #4045, #4075 |
 
 **Cost.** 7 entries x 2 attempts = 14 attempts. At the Model A figure of $0.0129 from `docs/01-prd.md` section 8, that is **$0.18**. Five snapshot builds at the 22 s per version measured in G7 is 110 sandbox-seconds, about **$0.002**. The corpus is free in budget terms; the cost is plan-authoring time, as section 7 already argued.
 
@@ -177,7 +243,9 @@ Predicate pairs follow D4: the run counts as reproduced only if the **actual** p
 
 ## Go / no-go
 
-**GO.** Seven entries qualify against a floor of five, with no MARGINAL entries promoted to reach the number.
+**GO.** Six entries qualify against a floor of five, with no MARGINAL entries promoted to reach the number.
+
+> *Defect record, day 5.* Was "Seven entries qualify". #4131 was excluded on day 5.
 
 Two things to carry into day 3. The day-7 target in `docs/01-prd.md` section 7 is 8 entries with a floor of 5 and a stretch of 12; **12 is now off the table** and 8 is only reachable by promoting a MARGINAL entry, which is what the floor exists to prevent. The realistic target is **7**, and section 7 should be corrected to say so rather than leaving a stretch figure the release window cannot support.
 
@@ -186,7 +254,7 @@ Second, three of the seven come from the same v2.19.0 to v2.20.0 pair. If that p
 ## Open questions
 
 - **Q22** How is the timeline column hidden in the UI, for #4045's steps?
-- **Q23** What is the exact focus-highlight class on a span row, for #4131's predicates?
+- **Q23** *Closed by the day-5 exclusion of #4131.* There is no focus-highlight class to key on: the fix changes scroll position, not styling, so the observable was never an attribute in the first place.
 - **Q24** Does the v2.15.0 / v2.15.1 shared UI commit mean any other release pair also shares a pointer? Checked for these nine and it does not, but worth re-checking if the window ever widens.
 - **Q25** What makes a sandbox "Not snapshottable"? `snapshot()` returned 409 on four consecutive attempts on day 3, including on a trivial freshly created sandbox with zero other sandboxes live and only two snapshots stored, then succeeded normally twenty minutes later. Ruled out: concurrent-sandbox state and a snapshot quota. Same 409 family as day 1's `Not revertable`. Treated as transient, and the environment manager now falls back to building in place.
 - **Q27** How should a plan pin the search result view mode? 2.19.0 defaults to List and 2.20.0 to Table, and `.ResultItemTitle` exists only in List. Either add an explicit step clicking the List toggle, or use locators valid in both views. Affects five of the seven entries.

@@ -1,0 +1,149 @@
+{
+  "plan_version": 1,
+  "issue": {
+    "repo": "jaegertracing/jaeger-ui",
+    "number": 3571,
+    "url": "https://github.com/jaegertracing/jaeger-ui/issues/3571",
+    "title": "Expanded span in the timeline messes up hierarchy view column",
+    "fix_commit": "5f360b497b",
+    "fix_pr": 3572,
+    "last_release_without": "2.16.0",
+    "first_release_with": "2.17.0"
+  },
+  "app": {
+    "name": "jaeger",
+    "version": "2.17.0",
+    "ui_port": 16686,
+    "otlp_port": 4318,
+    "read_only_ui": true
+  },
+  "seeds": [
+    {
+      "id": "s1",
+      "endpoint": "/v1/traces",
+      "expected_response": {
+        "status": 200
+      },
+      "payload": {
+        "resourceSpans": [
+          {
+            "resource": {
+              "attributes": [
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "thrice-3571"
+                  }
+                }
+              ]
+            },
+            "scopeSpans": [
+              {
+                "scope": {
+                  "name": "thrice"
+                },
+                "spans": [
+                  {
+                    "traceId": "3571000000000000000000000000abcd",
+                    "spanId": "3571000000000000",
+                    "name": "thrice-root",
+                    "kind": 2,
+                    "startOffsetMs": 5000,
+                    "endOffsetMs": 1000
+                  },
+                  {
+                    "traceId": "3571000000000000000000000000abcd",
+                    "spanId": "3571000000000001",
+                    "name": "thrice-mid",
+                    "kind": 3,
+                    "startOffsetMs": 4600,
+                    "endOffsetMs": 1200,
+                    "parentSpanId": "3571000000000000"
+                  },
+                  {
+                    "traceId": "3571000000000000000000000000abcd",
+                    "spanId": "3571000000000002",
+                    "name": "thrice-leaf",
+                    "kind": 3,
+                    "startOffsetMs": 4200,
+                    "endOffsetMs": 1400,
+                    "parentSpanId": "3571000000000001"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "steps": [
+    {
+      "id": "st1",
+      "action": "goto",
+      "args": {
+        "path": "/trace/3571000000000000000000000000abcd"
+      },
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st2",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".span-name"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st3",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".span-name:has-text('thrice-mid')"
+        },
+        {
+          "by": "text",
+          "value": "thrice-mid"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st4",
+      "action": "wait_for",
+      "args": {
+        "ms": 1500
+      },
+      "timeout_ms": 5000
+    }
+  ],
+  "assertion_step_ids": [
+    "st2",
+    "st4"
+  ],
+  "actual_predicate": {
+    "type": "element_absent",
+    "args": {
+      "locator": {
+        "by": "css",
+        "value": "[data-testid='detail-row-self-guide']"
+      }
+    },
+    "summary": "the detail row renders no self indent guide"
+  },
+  "expected_predicate": {
+    "type": "element_visible",
+    "args": {
+      "locator": {
+        "by": "css",
+        "value": "[data-testid='detail-row-self-guide']"
+      }
+    },
+    "summary": "the detail row renders its self indent guide"
+  },
+  "notes": "Diff-derived, never issue-derived. The issue reads as a CSS regression ('vertical bars are interrupted', 'blank white row'), but the fix at 5f360b497b adds a real DOM node: SpanTreeOffset gains an isDetailRow prop and renders <span className='SpanTreeOffset--indentGuide' data-testid='detail-row-self-guide'/> when isDetailRow && hasChildren. Verified absent at 2.16.0 (0 occurrences in the file) and present at 2.17.0, so the pair keys on a testid rather than on pixels. The seed is a three-span chain so the middle span has a child, which is what hasChildren gates on, and the plan expands that middle span exactly as the issue's steps describe. No search page is involved, so hazard H3 (view-mode divergence) does not apply."
+}
