@@ -42,6 +42,31 @@ def resolve_url(base_url: str, path: str) -> str:
     merged = dict(parse_qsl(base.query)) | dict(parse_qsl(raw_query))
     return urlunsplit((base.scheme, base.netloc, raw_path or "/", urlencode(merged), ""))
 
+
+def _norm(path: str) -> str:
+    p = (path or "/").split("?")[0].split("#")[0]
+    return p.rstrip("/") or "/"
+
+
+def check_landed(requested_path: str, landed_url: str) -> str | None:
+    """Return an error string if navigation did not land where the plan asked.
+
+    Q29. The day-5 URL join bug survived three days because nothing checked
+    this: the runner asked for /trace/<id>, the browser loaded /, and jaeger-ui
+    renders / as the Search page, so every signal short of a locator timeout
+    said the run was fine. A plan that only ever visits the default route
+    cannot detect its own navigation being wrong.
+
+    This closes the class rather than the instance: any future mistake in URL
+    construction, any silent redirect, any base-path misconfiguration fails
+    here with the two paths in the message instead of surfacing as a confusing
+    locator miss several steps later.
+    """
+    want, got = _norm(requested_path), _norm(urlsplit(landed_url).path)
+    if want == got:
+        return None
+    return f"asked for {want!r}, landed on {got!r}"
+
 STEP_SETTLE_MS = 1200
 
 
@@ -117,6 +142,10 @@ async def run_one(
                                 await page.goto(resolve_url(base_url, step.args["path"]),
                                                 wait_until="domcontentloaded",
                                                 timeout=step.timeout_ms)
+                                mismatch = check_landed(step.args["path"], page.url)
+                                ev["landed_path"] = _norm(urlsplit(page.url).path)
+                                if mismatch:
+                                    raise RunFailed("navigation_mismatch", mismatch)
                             elif step.action == "wait_for":
                                 if step.locators:
                                     handle, idx = await _resolve(page, step)

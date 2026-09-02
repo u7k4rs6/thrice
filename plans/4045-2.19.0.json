@@ -1,0 +1,204 @@
+{
+  "plan_version": 1,
+  "issue": {
+    "repo": "jaegertracing/jaeger-ui",
+    "number": 4045,
+    "url": "https://github.com/jaegertracing/jaeger-ui/issues/4045",
+    "title": "Span Detail sidepanel is not resizable when timeline is hidden",
+    "fix_commit": "bdb1990aa6",
+    "fix_pr": 4046,
+    "last_release_without": "2.19.0",
+    "first_release_with": "2.20.0"
+  },
+  "app": {
+    "name": "jaeger",
+    "version": "2.19.0",
+    "ui_port": 16686,
+    "otlp_port": 4318,
+    "read_only_ui": true
+  },
+  "seeds": [
+    {
+      "id": "s1",
+      "endpoint": "/v1/traces",
+      "expected_response": {
+        "status": 200
+      },
+      "payload": {
+        "resourceSpans": [
+          {
+            "resource": {
+              "attributes": [
+                {
+                  "key": "service.name",
+                  "value": {
+                    "stringValue": "thrice-4045"
+                  }
+                }
+              ]
+            },
+            "scopeSpans": [
+              {
+                "scope": {
+                  "name": "thrice"
+                },
+                "spans": [
+                  {
+                    "traceId": "4045000000000000000000000000abcd",
+                    "spanId": "4045000000000000",
+                    "name": "thrice-root",
+                    "kind": 2,
+                    "startOffsetMs": 5000,
+                    "endOffsetMs": 1000
+                  },
+                  {
+                    "traceId": "4045000000000000000000000000abcd",
+                    "spanId": "4045000000000001",
+                    "name": "thrice-child",
+                    "kind": 3,
+                    "startOffsetMs": 4700,
+                    "endOffsetMs": 1150,
+                    "parentSpanId": "4045000000000000"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "steps": [
+    {
+      "id": "st1",
+      "action": "goto",
+      "args": {
+        "path": "/trace/4045000000000000000000000000abcd"
+      },
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st2",
+      "action": "wait_for",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".span-name"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st3",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[aria-label='Trace view settings']"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st4",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ant-dropdown-menu-item:has-text('Show Span in Sidebar')"
+        },
+        {
+          "by": "text",
+          "value": "Show Span in Sidebar"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st5",
+      "action": "wait_for",
+      "args": {
+        "ms": 1000
+      },
+      "timeout_ms": 4000
+    },
+    {
+      "id": "st6",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".span-name"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st7",
+      "action": "wait_for",
+      "args": {
+        "ms": 1000
+      },
+      "timeout_ms": 4000
+    },
+    {
+      "id": "st8",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": "[aria-label='Trace view settings']"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st9",
+      "action": "click",
+      "locators": [
+        {
+          "by": "css",
+          "value": ".ant-dropdown-menu-item:has-text('Show Timeline')"
+        },
+        {
+          "by": "text",
+          "value": "Show Timeline"
+        }
+      ],
+      "timeout_ms": 30000
+    },
+    {
+      "id": "st10",
+      "action": "wait_for",
+      "args": {
+        "ms": 2000
+      },
+      "timeout_ms": 5000
+    }
+  ],
+  "assertion_step_ids": [
+    "st2",
+    "st10"
+  ],
+  "actual_predicate": {
+    "type": "element_absent",
+    "args": {
+      "locator": {
+        "by": "css",
+        "value": "[data-testid='vertical-resizer']"
+      }
+    },
+    "summary": "with the timeline hidden the side panel has no resizer"
+  },
+  "expected_predicate": {
+    "type": "element_visible",
+    "args": {
+      "locator": {
+        "by": "css",
+        "value": "[data-testid='vertical-resizer']"
+      }
+    },
+    "summary": "the side panel stays resizable with the timeline hidden"
+  },
+  "notes": "Diff-derived. At 2.19.0 VerticalResizer is rendered inside the timelineBarsVisible branch of TimelineHeaderRow, so hiding the timeline removes it. The fix at bdb1990aa6 moves it to (timelineBarsVisible || sidePanelVisible). The plan therefore turns on the sidebar detail mode, opens a span detail so the side panel is actually populated, then hides the timeline, which is the exact state the issue screenshots. Contrary to the day-6 brief this entry does NOT start from search results: /trace/<id> is reachable directly, as #3571 and #3804 proved, so hazard H3 does not apply and the view-mode pin is unnecessary here. Locator is the data-testid on VerticalResizer."
+}

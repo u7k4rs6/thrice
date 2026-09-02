@@ -64,6 +64,11 @@ def _predicate(d: Any, where: str, errs: list[str]) -> Predicate:
             errs.append(f"{where}: {t} requires args.locator")
         else:
             _locator(args["locator"], f"{where}.args.locator", errs)
+    if t in ("text_present", "text_absent"):
+        if "re" not in args:
+            errs.append(f"{where}: {t} requires args.re")
+        if args.get("scope"):
+            _locator(args["scope"], f"{where}.args.scope", errs)
     return Predicate(type=t or "", args=args, summary=d.get("summary", ""))
 
 

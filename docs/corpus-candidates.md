@@ -427,3 +427,88 @@ Fixed with a proper URL join that preserves the token and merges query
 parameters. Worth recording as a fourth hazard in spirit: **a harness defect can
 hide behind a plan that only ever exercises the default route**, and the more
 plans there are, the sooner such a defect shows up. Two entries were enough.
+
+---
+
+## Day 6 final: the corpus result
+
+Six entries attempted, each with a hard cutoff of two both-sides runs.
+
+| Entry | Buggy release | Fixed release | Result |
+|---|---|---|---|
+| **#4075** back-to-search arrow | 2.19.0 REPRODUCED 3/3 | 2.20.0 NOT_REPRODUCED 3/3 | **correct** |
+| **#3571** detail-row hierarchy guides | 2.16.0 REPRODUCED 3/3 | 2.17.0 NOT_REPRODUCED 3/3 | **correct** |
+| **#3804** expander not keyboard reachable | 2.17.0 REPRODUCED 3/3 | 2.18.0 NOT_REPRODUCED 3/3 | **correct** |
+| **#4045** side panel resizer | 2.19.0 REPRODUCED 3/3 | 2.20.0 **REPRODUCED 3/3** | **incorrect** |
+| **#3967** comparison selection | 2.18.0 **NOT_REPRODUCED 3/3** | 2.19.0 NOT_REPRODUCED 3/3 | **incorrect** |
+| **#3468** TraceDiff slot B | 2.16.0 INCONCLUSIVE | 2.17.0 NOT_REPRODUCED | **inconclusive** |
+
+**correct 3, incorrect 2, inconclusive 1.**
+
+Per-attempt confusion matrix across the ten attempts that produced a verdict:
+
+| | REPRODUCED | NOT_REPRODUCED |
+|---|---|---|
+| on a buggy release | TP 4 | FN 1 |
+| on a fixed release | FP 1 | TN 5 |
+
+**Precision 0.80, recall 0.80.**
+
+### The scoring question, stated rather than decided quietly
+
+The day-6 brief said to mark an entry EXCLUDED when it has not landed after its
+second run. Applied literally that would remove #4045, #3967 and #3468 and
+leave "3 of 3 correct".
+
+**That number would be dishonest**, and this document already says why: "Entries
+are chosen before running, recorded in the repo with the fixing commit, and
+never removed after seeing a result. Removing a losing entry after the fact is
+the one thing that would make the number worthless."
+
+So a distinction is drawn:
+
+- **#4045 and #3967 are scored INCORRECT, not excluded.** Both produced complete,
+  unanimous verdicts on both sides. thrice ran cleanly and gave the wrong answer.
+  That is a corpus result and removing it would be selection bias.
+- **#3468 is scored INCONCLUSIVE**, which the taxonomy already handles: it never
+  produced a verdict on the buggy side, so it is reported separately and never
+  counted as correct.
+
+The headline is therefore **3 of 5 conclusive entries correct, precision 0.80,
+recall 0.80, with 1 inconclusive**, not 3 of 3.
+
+### What went wrong on the two incorrect entries
+
+**#4045, a false positive.** The plan reaches the right state: the captured
+screenshot shows the side panel open and the timeline hidden, exactly the
+configuration in the issue. The fix moves `VerticalResizer` from inside
+`timelineBarsVisible` to `(timelineBarsVisible || sidePanelVisible)`, so the
+resizer should appear on 2.20.0 and not on 2.19.0. It read absent on both, twice,
+including after the predicate evaluator was corrected to consider all matching
+elements rather than only the first. The remaining explanation is that
+`sidePanelVisible` is not satisfied by the state the plan produces, but that was
+not chased: the entry was at its cutoff.
+
+**#3967, a false negative.** The comparison selection did not disappear on
+2.18.0, so the reported bug did not manifest under the plan's steps. The plan
+had to drop the view-mode pin entirely for this pair, because the List/Table
+toggle does not exist at 2.18.0 (see `docs/findings.md` F3), which means the two
+sides of this pair have materially different search UIs. That is a plausible
+cause and it was also not chased.
+
+**#3468, inconclusive.** The compare route `/trace/<a>...<b>?cohort=...` renders
+identically on 2.16.0 and 2.17.0: slot A empty, slot B loading. The cohort query
+parameter does not populate the comparison set, so the URL-driven approach
+cannot reproduce the bug at all. Reproducing it needs the cohort built through
+the search results flow, which is a different plan in kind rather than a tuning
+of this one. Cut at the first run rather than the second, because a second run
+of an approach known not to reach the state would have bought nothing.
+
+### The honest reading
+
+Three of six entries were authored correctly on the first attempt and scored
+right. Two produced confident wrong answers. One could not be set up at all.
+For a tool whose entire pitch is that agents are unreliable narrators, a
+measured precision of 0.80 on a six-entry corpus is the appropriate amount of
+humility to publish, and it is considerably more interesting than a clean sweep
+would have been.

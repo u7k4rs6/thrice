@@ -17,8 +17,8 @@ PLAN_VERSION = 1
 PREDICATE_TYPES: dict[str, bool] = {
     "element_visible": True,
     "element_absent": True,
-    "text_present": False,
-    "text_absent": False,
+    "text_present": True,
+    "text_absent": True,
     "url_matches": False,
     "console_error": False,
     "network_response": False,
