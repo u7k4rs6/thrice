@@ -60,9 +60,32 @@ ENTRIES = [
 def esc(x) -> str:
     return html.escape(str(x))
 
-def b64(path: str) -> str | None:
+#: Specimen crop, in source pixels, 16:10 to match the display box.
+#: The screenshots are 1280x800 captured at deviceScaleFactor 1. Shown whole in
+#: a ~345px slot that is a 3.7x downscale of dense UI text, which reads as mush.
+#: Re-capturing at 2x would not help: 2560 into 345 is worse, not better. So the
+#: page shows the region the predicate actually checks, at close to native
+#: resolution: roughly 1.2x downscale on a 2x display, 2.3x on a 1x display.
+#: (0,0) is deliberate for both sides so the two images stay directly
+#: comparable rather than each being cropped to flatter its own case.
+SPECIMEN_CROP = (0, 0, 800, 500)
+
+
+def b64(path: str, crop: tuple | None = None) -> str | None:
     p = pathlib.Path(path)
-    return base64.b64encode(p.read_bytes()).decode() if p.exists() else None
+    if not p.exists():
+        return None
+    if crop is None:
+        return base64.b64encode(p.read_bytes()).decode()
+    from io import BytesIO
+
+    from PIL import Image
+
+    with Image.open(p) as im:
+        box = im.crop(crop)
+        buf = BytesIO()
+        box.save(buf, format="PNG", optimize=True)
+    return base64.b64encode(buf.getvalue()).decode()
 
 # real run window, from the attempts themselves
 stamps = sorted(d['started_at'] for d in BEST.values())
@@ -141,7 +164,7 @@ header.mast{display:flex;flex-direction:column;gap:clamp(8px,1.4vw,14px);
 .specverdict{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
 .specverdict b{font:600 clamp(11px,1.4vw,14px)/1.2 var(--sans);letter-spacing:.07em}
 .specverdict span{font-family:var(--mono);font-size:11px;color:var(--mid)}
-.shot{border:1px solid var(--rule);width:100%;aspect-ratio:16/10;display:block;object-fit:cover;object-position:top}
+.shot{border:1px solid var(--rule);width:100%;aspect-ratio:16/10;display:block;object-fit:cover;object-position:top left}
 .speccap{margin:0;font-size:12px;line-height:1.55;color:var(--mid);text-wrap:pretty}
 .speccap .mono{font-size:11px;color:var(--ink)}
 
@@ -293,8 +316,8 @@ def row_html(num, vb, vf, kind, dh, db, i):
 
 rows = "".join(row_html(*e, i) for e, i in zip(ENTRIES, range(1, 13, 2)))
 
-spec_b = b64('artifacts/4075-2.19.0-0302e4/run_0_st10.png')
-spec_f = b64('artifacts/4075-2.20.0-1b6426/run_0_st10.png')
+spec_b = b64('artifacts/4075-2.19.0-0302e4/run_0_st10.png', SPECIMEN_CROP)
+spec_f = b64('artifacts/4075-2.20.0-1b6426/run_0_st10.png', SPECIMEN_CROP)
 
 def img(data, alt):
     if not data:
@@ -361,14 +384,14 @@ DOC = f"""<!doctype html><html lang=en><meta charset=utf-8>
       <div class=spechead><span class=cap>Last buggy release</span><span class=v>jaeger-ui 2.19.0</span></div>
       <div class=specverdict><b>REPRODUCED</b><span>3 of 3</span></div>
       {img(spec_b, 'Assertion screenshot, 2.19.0 run')}
-      <p class=speccap><span class=mono>[element_visible]</span> checked against seeded backend state. All three browsers read the reported fault.</p>
+      <p class=speccap><span class=mono>[element_visible]</span> on the trace page header. The trace opened with no back-to-search arrow beside the title. All three browsers read the same fault.</p>
     </div>
     <div class=specmid><div><p>Ground truth: the commit that fixed this issue landed in 2.20.0. thrice agreed.</p></div></div>
     <div class=speccol>
       <div class=spechead><span class=cap>First fixed release</span><span class=v>jaeger-ui 2.20.0</span></div>
       <div class=specverdict><b>NOT_REPRODUCED</b><span>3 of 3</span></div>
       {img(spec_f, 'Assertion screenshot, 2.20.0 run')}
-      <p class=speccap><span class=mono>[element_visible]</span> checked against the same seeded state. The fault is absent in all three.</p>
+      <p class=speccap><span class=mono>[element_visible]</span> on the search results. The click copied the trace ID instead of navigating, so the page never left search. Absent in all three.</p>
     </div>
   </div>
 </section>
