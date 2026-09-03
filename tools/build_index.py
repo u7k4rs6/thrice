@@ -103,6 +103,23 @@ CSS = """
   --black:UnifrakturMaguntia,Newsreader,Georgia,serif;
   --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
+/* Newsprint texture.
+   Two inline SVG turbulence layers, no image files, so the page stays
+   self-contained: a fine fibre grain and a broad mottle for the uneven
+   ink-take of cheap stock, plus a faint edge vignette.
+   Painted at z-index 0 under .wrap (z-index 1), so it textures the paper and
+   never sits on top of the type or the specimen screenshots. Blend is
+   multiply against the paper colour rather than a grey wash, which keeps the
+   contrast of the ink unchanged. */
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27160%27%20height%3D%27160%27%3E%3Cfilter%20id%3D%27g%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.85%27%20numOctaves%3D%274%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27saturate%27%20values%3D%270%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27160%27%20height%3D%27160%27%20filter%3D%27url%28%23g%29%27%20opacity%3D%270.42%27%2F%3E%3C%2Fsvg%3E");background-size:160px 160px;
+  opacity:.30;mix-blend-mode:multiply}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27700%27%20height%3D%27700%27%3E%3Cfilter%20id%3D%27m%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.012%27%20numOctaves%3D%273%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27saturate%27%20values%3D%270%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27700%27%20height%3D%27700%27%20filter%3D%27url%28%23m%29%27%20opacity%3D%270.5%27%2F%3E%3C%2Fsvg%3E"),
+    radial-gradient(120% 90% at 50% 40%,transparent 55%,rgba(122,106,63,.10) 100%);
+  background-size:700px 700px,100% 100%;
+  opacity:.55;mix-blend-mode:multiply}
+@media (prefers-reduced-motion:no-preference){}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 html,body{margin:0;padding:0;background:var(--paper)}
@@ -164,7 +181,7 @@ header.mast{display:flex;flex-direction:column;gap:clamp(8px,1.4vw,14px);
 .specverdict{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
 .specverdict b{font:600 clamp(11px,1.4vw,14px)/1.2 var(--sans);letter-spacing:.07em}
 .specverdict span{font-family:var(--mono);font-size:11px;color:var(--mid)}
-.shot{border:1px solid var(--rule);width:100%;aspect-ratio:16/10;display:block;object-fit:cover;object-position:top left}
+.shot{position:relative;z-index:1;background:#fff;border:1px solid var(--rule);width:100%;aspect-ratio:16/10;display:block;object-fit:cover;object-position:top left}
 .speccap{margin:0;font-size:12px;line-height:1.55;color:var(--mid);text-wrap:pretty}
 .speccap .mono{font-size:11px;color:var(--ink)}
 
