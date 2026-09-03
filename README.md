@@ -1,251 +1,130 @@
-# thrice
+<p align="center">
+  <img src="docs/masthead.svg" alt="thrice" width="100%">
+</p>
 
-**Does this bug still reproduce?** thrice answers that question for a
-self-hosted web app by running the reported steps three times in three
-independent browsers and checking typed predicates, rather than by asking a
-model what it saw.
+**thrice** reproduces reported UI bugs in self-hosted open source web apps. It forks a cloud sandbox from a snapshot of the app at a pinned version, seeds known backend state, runs the reported steps three times in parallel cloud browsers, and checks concrete predicates against that state.
 
-It was then measured against known answers.
+There is no model in the run loop. Plans are authored by a human, validated against a schema, and executed deterministically. The verdict comes from backend state, never from an agent's account of what it did.
 
-## What is implemented
-
-thrice is a **validated vertical slice, not a complete implementation of its own
-spec.** The plan schema declares more actions and predicate types than the
-runner and evaluator support, and the gap is enforced rather than hidden: a plan
-using an unimplemented action or predicate is **rejected by the validator before
-anything launches**, with the message "specified but not implemented yet". It
-does not fail partway through a run.
-
-**Actions: 4 of 8 declared are accepted, and one of those four does nothing.**
-
-| Action | Status |
-|---|---|
-| `goto` | implemented |
-| `click` | implemented |
-| `wait_for` | implemented (locator or fixed delay) |
-| `assert` | accepted by the validator, but a no-op in the runner. Predicates are evaluated after the last step, not at an `assert` step |
-| `fill` | declared, not implemented |
-| `press` | declared, not implemented |
-| `select` | declared, not implemented |
-| `scroll` | declared, not implemented |
-
-**Predicates: 4 of 10 declared are implemented.**
-
-| Predicate | Status |
-|---|---|
-| `element_visible` | implemented |
-| `element_absent` | implemented |
-| `text_present` | implemented (added on day 6 for #3468) |
-| `text_absent` | implemented, unused by the corpus |
-| `url_matches` | declared, not implemented |
-| `console_error` | declared, not implemented |
-| `network_response` | declared, not implemented |
-| `attribute_equals` | declared, not implemented |
-| `count_equals` | declared, not implemented |
-| `screenshot_region_digest_equals` | declared, not implemented |
-
-**Every corpus entry was authored within the implemented subset.** Across all
-twelve plans the actions used are `goto` (12), `wait_for` (56) and `click` (36),
-and the predicates used are `element_visible` (12), `element_absent` (8) and
-`text_present` (4). Nothing in the results below depends on an unimplemented
-feature.
-
-The consequence worth stating: the corpus was constrained by what the runner can
-do, not only by what the release window allowed. An entry needing keyboard input
-(`press`), form entry (`fill`), or a console-error assertion could not have been
-authored at all, whatever its release pair looked like. #4131 was excluded partly
-for a related reason, and that exclusion is in the count below.
+---
 
 ## The result
 
-thrice was validated against a corpus of **already-fixed jaeger-ui issues**,
-where ground truth comes from the commit that closed each one. For every entry
-we know the last release with the bug and the first release without it, so the
-correct answer is known in advance: REPRODUCED on the buggy release,
-NOT_REPRODUCED on the fixed one.
+It was validated against a corpus of already-fixed `jaeger-ui` issues, where the right answer is known from the commit that fixed each bug. Run on the last buggy release it should say REPRODUCED. Run on the first fixed release it should say NOT_REPRODUCED.
 
-| | |
-|---|---|
-| Entries attempted | 6 |
-| **Correct** | **3** |
-| Incorrect | 2 |
-| Inconclusive | 1 |
-| **Precision** | **0.80** |
-| **Recall** | **0.80** |
+**Three of five conclusive entries correct. Precision 0.80, recall 0.80.**
 
-Per-attempt confusion matrix across the ten attempts that produced a verdict:
+It got two wrong. Both are published below with diagnoses, and both were caused by thrice, not by jaeger. No entry was removed from the corpus after its result was seen.
 
-| | REPRODUCED | NOT_REPRODUCED |
+---
+
+## Method
+
+<p align="center">
+  <img src="docs/method.svg" alt="Method of measurement: fork snapshot, seed known state, three parallel browsers, check predicates" width="100%">
+</p>
+
+A plan is a JSON document describing the reproduction: the seed payloads, the ordered steps, and two predicates. The **actual** predicate describes the buggy behaviour. The **expected** predicate describes correct behaviour. A run counts as reproduced only if the actual predicate holds and the expected predicate fails. Both are evaluated on every run.
+
+Verdicts are `REPRODUCED` (3 of 3), `NOT_REPRODUCED` (0 of 3 with all steps completing), `FLAKY` (1 or 2 of 3), or `INCONCLUSIVE` (any run failed to complete, with a reason attached).
+
+---
+
+## Record of attempts
+
+<p align="center">
+  <img src="docs/results.svg" alt="Record of attempts: six issues, twelve attempts, three correct, two incorrect, one inconclusive" width="100%">
+</p>
+
+Every attempt is published in [`artifacts/`](artifacts/), including the two that scored incorrect and the one that never reached a verdict. Each carries a self-contained report page with per-step timings, assertion screenshots, and a stitched screencast of each of the three runs.
+
+---
+
+## What it got wrong
+
+**#4045, false positive.** The side panel resizer read as absent on both releases, even though the captured screenshot shows the correct state with the side panel open and the timeline hidden. The cause was in thrice: the predicate evaluator pinned `.first`, so `element_visible` and `element_absent` silently answered a different question on any page where several elements matched.
+
+**#3967, false negative.** The two releases have materially different search interfaces. The view-mode pin that keeps a single plan valid across a release pair waits for a List/Table toggle that shipped in 2.19.0, so it cannot exist at 2.18.0. The mitigation for cross-version divergence turned out to be version-dependent itself.
+
+**#3468, inconclusive.** The compare route renders identically on both versions, so the approach was wrong in kind rather than in degree. It is recorded as inconclusive rather than excluded.
+
+---
+
+## What is implemented
+
+thrice is a validated vertical slice, not a complete implementation of its own specification.
+
+| | Declared | Implemented |
 |---|---|---|
-| on a buggy release | TP 4 | FN 1 |
-| on a fixed release | FP 1 | TN 5 |
+| Plan actions | `goto` `click` `fill` `press` `select` `wait_for` `scroll` `assert` | `goto` `click` `wait_for` `assert` |
+| Predicate types | 10 | 4 (`element_visible`, `element_absent`, `text_present`, `text_absent`) |
 
-Three of six entries were authored correctly on the first attempt and scored
-right. **Two produced confident wrong answers.** One could not be set up at all.
-That is the number, and the two failures are described below rather than
-removed.
+A plan using an unimplemented action or predicate is rejected by the validator before anything launches, with the message "specified but not implemented yet". It does not fail partway through a run. `assert` is accepted but is a no-op in the runner, so three of the eight declared actions actually do anything. Every corpus entry was authored within the implemented subset: across all twelve plans the actions used are `goto`, `wait_for` and `click`, and the predicates are `element_visible`, `element_absent` and `text_present`.
 
-Sample report page: [`artifacts/4075-2.19.0-0302e4/report.html`](artifacts/4075-2.19.0-0302e4/report.html)
-(28 report pages and 75 screencast videos are committed).
+---
 
-## How it works
+## The corpus and how it was bounded
 
-```
-issue -> plan (JSON, hand-authored, schema-validated)
-      -> fork a Solari sandbox from a snapshot of jaeger at a pinned version
-      -> seed backend state over OTLP/HTTP to localhost:4318
-      -> run the steps in 3 Solari browsers over CDP, concurrently
-      -> evaluate two typed predicates per run
-      -> verdict
-```
+Candidates were drawn from `jaeger-ui` issues closed between the 2.14.0 and 2.20.0 releases. Fixes were mapped to releases by resolving the `jaeger-ui` submodule commit pinned at each `jaeger` release tag and testing ancestry, rather than by comparing dates. That caught 2.15.0 and 2.15.1 shipping an identical UI commit, which makes that pair unusable.
 
-- **No model in the run loop.** An LLM can draft a plan offline; a human reviews
-  it; the run itself is deterministic and holds no API key. Every plan in this
-  corpus was hand-authored.
-- **Two predicates, not one.** A run counts as reproduced only if the *actual*
-  predicate holds **and** the *expected* predicate fails. Both are evaluated
-  every run. "The buggy thing happened" and "the correct thing did not happen"
-  are different claims.
-- **Predicates are typed**, drawn from a closed set (`element_visible`,
-  `element_absent`, `text_present`, `text_absent`, and others specified but not
-  implemented). No arbitrary JavaScript and no XPath can come from a plan.
-- **Four verdicts:** REPRODUCED (3 of 3), FLAKY (1 or 2 of 3),
-  NOT_REPRODUCED (0 of 3 with every step completing), INCONCLUSIVE (any run did
-  not complete, with a machine-readable reason). INCONCLUSIVE is never counted
-  as correct.
+Of 44 candidates, 6 qualified. The dominant exclusion was not expressiveness:
 
-Cost, measured: about **one cent per entry** for both sides once the plan is
-written and the snapshots exist. The whole build ran for well under $1 of
-Solari credits.
-
-## The corpus, and what bounded it
-
-Of 146 closed jaeger-ui issues in the window, 44 were labelled `bug` and
-completed. **36 were excluded**, and the reason matters more than the number:
-
-| Exclusion cause | Count |
+| Reason | Count |
 |---|---|
-| Fix landed after the newest buildable release | 10 |
-| No identifiable fix commit (referenced PR closed unmerged) | 11 |
-| Fix already present in the oldest buildable release | 1 |
-| **Subtotal: release-pair availability** | **22** |
-| Pure CSS or contrast regression | 10 |
-| Nothing user-observable (refactor, test-only) | 2 |
-| Needs an external backend (Prometheus) | 1 |
-| Needs a large trace (virtualized scroll) | 1 |
+| Release pair unavailable (fix after 2.20.0, no identifiable fix commit, or fixed before 2.14.0) | 22 |
+| Not assertable from a small seed with a concrete predicate | 14 |
+| Marginal, not promoted to reach a target number | 2 |
+| **Qualified** | **6** |
 
-**22 of 36 exclusions had nothing to do with what thrice can express.** The
-issue was fine; the versions needed to check it against do not exist as
-buildable releases. Jaeger 2.x is published on GitHub only for 2.14.0 through
-2.20.0, nine releases over seven months. That bounds any tool built this way.
+The corpus is bounded by jaeger's seven-month 2.x release window, not by what thrice can assert.
 
-Ground truth was established by resolving the **jaeger-ui submodule pointer at
-each jaeger release tag** and testing commit ancestry, not by comparing dates.
-That immediately showed 2.15.0 and 2.15.1 ship an identical UI commit, making
-that pair unusable.
+Nine dark-mode and contrast regressions were deliberately excluded. A screenshot region digest could separate them mechanically, but between adjacent releases many things change, so the predicate would report "these pixels differ" rather than "this contrast bug is present." All nine would have scored correct for the wrong reason.
 
-## The two it got wrong
+---
 
-**#4045, a false positive.** REPRODUCED on both releases. The plan reaches the
-right state (the committed screenshot shows the side panel open and the timeline
-hidden, exactly the issue's configuration), and the fix moves the resizer's
-render condition, so it should appear on the fixed release and not the buggy
-one. It read absent on both, twice, including after a genuine bug in the
-predicate evaluator was fixed. The likely remaining cause is that the internal
-`sidePanelVisible` flag is not satisfied by the state the plan produces. Not
-chased further: the entry was at its cutoff of two runs.
+## What did not work
 
-**#3967, a false negative.** NOT_REPRODUCED on both. The reported bug did not
-manifest under the plan's steps on the buggy release. Its two releases have
-materially different search UIs: the List/Table view toggle does not exist at
-all in the older one.
+**63 runs across 21 attempts produced zero divergence and zero FLAKY verdicts.**
 
-**#3468, inconclusive.** The compare route renders identically on both releases,
-so the URL-driven approach cannot reach the state the bug needs. Reproducing it
-requires building the comparison set through the search flow, which is a
-different plan in kind.
+The three-run mechanism, which the project is named after, is unvalidated by this corpus. It cost three times the browser-seconds and bought no information on any entry. The mitigating point is that the corpus was selected for small deterministic seeds, which is close to selecting for non-flakiness, so this is weak evidence either way.
 
-## The three-run mechanism is unvalidated
+Validating it properly needs a corpus of deliberately nondeterministic cases with a controlled nondeterminism source. That was out of scope for a seven-day build. The divergence differ remains specified and unbuilt, because writing it would mean coding against zero examples.
 
-Running three times instead of once is the core of the design. On this corpus it
-bought nothing:
+Full evidence for this and nine other findings is in [`docs/findings.md`](docs/findings.md), including three that contradict the platform documentation.
 
-| Measure | Count |
-|---|---|
-| Attempts that ran | 21 |
-| Total runs | 63 |
-| Completed runs | 33 |
-| Attempts with at least two completed runs | 11 |
-| **Attempts where completed runs disagreed** | **0** |
-| **FLAKY verdicts** | **0** |
+---
 
-Every attempt that completed did so unanimously. The argument for three runs is
-that one cannot distinguish a bug from a race, and that flakiness is the finding
-maintainers most want. On this corpus that argument is **unfalsified but also
-unsupported**.
-
-It is not evidence the mechanism is worthless. The corpus was selected for
-entries reproducible from a small deterministic seed, which is close to
-selecting for non-flaky behaviour, and the excluded candidates include exactly
-the timing-sensitive cases where flakiness would live. But the design was
-validated on a corpus chosen to make it redundant, and the divergence differ is
-left specified and unbuilt because there is nothing here for it to align.
-
-**Next, and what would actually settle it:** a second corpus of deliberately
-nondeterministic cases with a *controlled* nondeterminism source, so that the
-expected flake rate is known in advance and the three-run mechanism can be
-scored against it the way the current corpus scores the verdicts. The present
-corpus cannot do this, because selecting for entries reproducible from a small
-deterministic seed is close to selecting for non-flakiness. That was out of
-scope for a seven-day build.
-
-## What thrice does not do
-
-- **It posts nothing.** No comment reaches any issue tracker. It holds no
-  GitHub write credential, so this is a property of the build rather than a
-  promise. The poster and human approval flow are specified and unbuilt.
-- No pull requests, ever.
-- No third-party websites. Every target is a local or Solari-hosted app.
-- No hosted service. If this ever runs for someone else, it runs on their
-  runner with their key.
-- One app in v1: jaeger-ui on the Jaeger 2.x all-in-one binary.
-
-## Findings
-
-Ten findings with evidence are in [`docs/findings.md`](docs/findings.md),
-including several that are about the platform rather than about thrice:
-
-- The preview gateway answers **502**, not the documented 425, when nothing is
-  listening yet, and 502 cannot be told from a genuinely broken gateway.
-- `409 Not snapshottable` and `Not revertable` are **transient**, and were
-  observed to clear on their own after twenty minutes.
-- **Release pairs diverge in ways absent from the fix diff**, and the obvious
-  mitigation is itself version-dependent: you cannot pin a control that does not
-  exist yet.
-- A harness defect can hide behind a plan that only exercises the default route.
-  One did, for three days.
-- Playwright `record_video` **does** work over `connect_over_cdp`, contrary to
-  the common assumption, because the driver is local.
-
-## Run it
+## Running it
 
 ```bash
 uv sync
-cp .env.example .env      # SOLARI_API_KEY
+cp .env.example .env          # SOLARI_API_KEY
 uv run python -m thrice.attempt plans/4075-2.19.0.json plans/4075-2.20.0.json
 uv run python -m thrice.report artifacts/<attempt-id>
 ```
 
-## Docs
+There is no packaged CLI yet: the runner and reporter are module entry points.
+The day-one environment gates were one-off spikes and live in
+[`spikes/`](spikes/) with their results in [`spikes/GATES.md`](spikes/GATES.md).
 
-| | |
-|---|---|
-| [`docs/01-prd.md`](docs/01-prd.md) | Problem, scope, verdict taxonomy, budget model |
-| [`docs/02-architecture.md`](docs/02-architecture.md) | Components, data model, environment manager, runner |
-| [`docs/03-security-and-access.md`](docs/03-security-and-access.md) | Threat model and controls |
-| [`docs/04-frontend-spec.md`](docs/04-frontend-spec.md) | CLI, report page, comment templates |
-| [`docs/corpus-candidates.md`](docs/corpus-candidates.md) | All 44 candidates, triage, hazard classes, results |
-| [`docs/findings.md`](docs/findings.md) | What this build learned, with evidence |
-| [`spikes/GATES.md`](spikes/GATES.md) | Day-1 feasibility gates against live Solari |
+An attempt costs roughly one cent. The whole validation run, six issues across twelve attempts, cost under twenty cents.
 
-Built on [Solari](https://getsolari.com). Seven days, one developer.
+A budget guard refuses to start any run that would cross a per-attempt or daily ceiling, and a sandbox ledger records every sandbox at creation and sweeps orphans at exit, including after `SIGKILL`.
+
+---
+
+## Built on Solari
+
+thrice uses [Solari](https://docs.getsolari.com) for sandboxes, snapshots, preview URLs, cloud browsers, and screencast capture. A runnable minimal example lives in the [cookbook fork](https://github.com/u7k4rs6/solari-cookbook/tree/main/examples/thrice-jaeger).
+
+Three things that each cost a day and are not in the documentation:
+
+- The not-ready preview status is **502**, not the documented 425, and is indistinguishable from a genuinely broken gateway. Poll with a hard deadline and corroborate from inside the sandbox.
+- **Snapshot before you seed.** A fork carries the seeded state, so a snapshot built after seeding is not clean.
+- **Verify the extracted binaries, not the tarball.** Jaeger's published `sha256sum.txt` covers the binaries inside the archive, not the archive itself.
+
+---
+
+## License
+
+MIT.

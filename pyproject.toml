@@ -1,0 +1,21 @@
+[project]
+name = "thrice"
+version = "0.1.0"
+description = "Reproduces reported UI bugs in self-hosted web apps, three times, and checks concrete predicates."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "solari-sandbox>=0.2.0",
+    "solari-browser>=0.1.2",
+    "playwright>=1.62",
+    "httpx>=0.28",
+    "pillow>=10",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["thrice"]
